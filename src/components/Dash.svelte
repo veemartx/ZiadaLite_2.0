@@ -1,22 +1,35 @@
 <script>
-    import MainStats from "./MainStats.svelte";
+    import MainDashData from "./dash/MainDashData.svelte";
+    import MainDashStats from "./dash/MainDashStats.svelte";
+    import QuickLinks from "./dash/QuickLinks.svelte";
+    import TopSalesTrends from "./dash/TopSalesTrends.svelte";
 </script>
 
 <main>
     <div class="wrapper">
         <div class="content">
-            <!-- main stats -->
-            <div class="mainStats">
-                <MainStats />
+            <!-- qlinks -->
+            <div class="quickLinks">
+                <QuickLinks />
             </div>
-            <!-- main stats -->
+
+            <div class="mainStats">
+                <MainDashStats />
+            </div>
+
+            <div class="salesTrends">
+                <TopSalesTrends />
+            </div>
+            <br />
+            <div class="mainDashData">
+                <MainDashData />
+            </div>
         </div>
     </div>
 </main>
 
 <style>
     main {
-        margin-top: 1em;
         margin-bottom: 1em;
     }
 </style>

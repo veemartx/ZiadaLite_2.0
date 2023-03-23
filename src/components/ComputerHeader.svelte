@@ -16,6 +16,7 @@
                     <Logo />
                 </div>
 
+                <div class="hspacer" />
                 <div class="search">
                     <TopSearch />
                 </div>
@@ -37,6 +38,10 @@
 </main>
 
 <style>
+    main {
+        background: var(--background-primary);
+    }
+
     .content {
         display: flex;
         justify-content: space-between;
@@ -44,8 +49,9 @@
     }
     .toolbar {
         margin-top: 0.1em;
+        margin-bottom:.2em;
         height: 4em;
-        border-bottom: 1px dotted rgb(3, 65, 42);
+        /* border-bottom: 1px dotted rgb(3, 65, 42); */
     }
 
     .navbar {
@@ -56,8 +62,13 @@
         flex: 1;
     }
 
+    .hspacer {
+        flex: 1;
+    }
+
     .search {
         flex: 3;
+        padding-top: 0.2em;
     }
 
     .actions {

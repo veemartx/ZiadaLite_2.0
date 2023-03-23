@@ -3,6 +3,9 @@
     import { Link, useLocation } from "svelte-navigator";
     import { Confirm } from "notiflix/build/notiflix-confirm-aio";
     import TopSearch from "./TopSearch.svelte";
+    import { getLiuDetails } from "../scripts/js/methods";
+
+    let liuDetails = getLiuDetails();
 
     const location = useLocation();
 
@@ -111,153 +114,56 @@
 
         {#if showNav}
             <div class="navbar">
-                <a href="../dash/">
-                    <div class="nav">
-                        <div class="nicon">
-                            <i class="ri-home-line" />
-                        </div>
-                        <div class="ntext">Home</div>
-                    </div>
-                </a>
-
-                <a href="../dash/products">
-                    <div class="nav">
-                        <div class="nicon">
-                            <i class="ri-product-hunt-line" />
-                        </div>
-                        <div class="ntext">Products</div>
-                    </div>
-                </a>
-
-                <a href="../dash/transfers">
-                    <div class="nav">
-                        <div class="nicon">
-                            <i class="ri-file-transfer-line" />
-                        </div>
-                        <div class="ntext">Transfers</div>
-                    </div>
-                </a>
-
-                <a href="../dash/orders">
-                    <div class="nav">
-                        <div class="nicon">
-                            <i class="ri-shape-line" />
-                        </div>
-                        <div class="ntext">Orders</div>
-                    </div>
-                </a>
-
-                <a href="../dash/transfer-requests">
-                    <div class="nav">
-                        <div class="nicon">
-                            <i class="ri-file-transfer-line" />
-                        </div>
-                        <div class="ntext">Transfer Requests</div>
-                    </div>
-                </a>
-
-                <a href="../dash/users">
-                    <div class="nav">
-                        <div class="nicon">
-                            <i class="ri-user-3-line" />
-                        </div>
-                        <div class="ntext">Users</div>
-                    </div>
-                </a>
-
-                <a href="../dash/expired">
-                    <div class="nav">
-                        <div class="nicon">
-                            <i class="ri-calendar-2-line" />
-                        </div>
-                        <div class="ntext">Expired</div>
-                    </div>
-                </a>
-
-                <a href="../dash/blacklist">
-                    <div class="nav">
-                        <div class="nicon">
-                            <i class="ri-close-circle-line" />
-                        </div>
-                        <div class="ntext">BlackList</div>
-                    </div>
-                </a>
-
-                <a href="../dash/reports">
-                    <div class="nav">
-                        <div class="nicon">
-                            <i class="ri-bar-chart-grouped-line" />
-                        </div>
-                        <div class="ntext">Reports</div>
-                    </div>
-                </a>
-
-                <a href="../dash/settings">
-                    <div class="nav">
-                        <div class="nicon">
-                            <i class="ri-tools-fill" />
-                        </div>
-                        <div class="ntext">Settings</div>
-                    </div>
-                </a>
-
-                <a href="../dash/trash">
-                    <div class="nav">
-                        <div class="nicon">
-                            <i class="ri-delete-bin-5-line" />
-                        </div>
-                        <div class="ntext">Trash</div>
-                    </div>
-                </a>
-
-                <div class="nav" style="height: 2em;" />
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <div class="nav" on:click={handleLogout}>
-                    <div class="nicon">
-                        <i class="ri-logout-circle-r-line" />
-                    </div>
-                    <div class="ntext">Logout</div>
+                <div class="welcomeTag">
+                    Welcome Back ({liuDetails.u})
                 </div>
+                <Link to="/new">
+                    <div class="nav">- New</div>
+                </Link>
 
-                <!-- <Link to="">
+                <Link to="/">
                     <div class="nav">- Home</div>
                 </Link>
 
-                <Link to="tests">
-                    <div class="nav">- Tests</div>
+                <Link to="products">
+                    <div class="nav">- Products</div>
                 </Link>
 
-                <Link to="users">
-                    <div class="nav">- Users</div>
+                <Link to="/transfers">
+                    <div class="nav">- Transfers</div>
                 </Link>
 
-                <Link to="articles">
-                    <div class="nav">- Articles</div>
+                <Link to="/orders">
+                    <div class="nav">- Orders</div>
                 </Link>
 
-                <Link to="reports">
+                <Link to="/transfer-requests">
+                    <div class="nav">- T-Requests</div>
+                </Link>
+
+                <Link to="/reports">
                     <div class="nav">- Reports</div>
                 </Link>
 
-                <Link to="resources">
-                    <div class="nav">- Resources</div>
+                <Link to="/users">
+                    <div class="nav">- Users</div>
                 </Link>
 
-                <Link to="profile">
+                <Link to="/profile">
                     <div class="nav">- Profile</div>
                 </Link>
 
-                <Link to="settings">
+                <Link to="/settings">
                     <div class="nav">- Settings</div>
                 </Link>
 
-                <Link to="trash">
+                <Link to="/trash">
                     <div class="nav">- Trash</div>
                 </Link>
 
                 <div class="nav" style="height: 2em;" />
-                svelte-ignore a11y-click-events-have-key-events -->
-                <!-- <div class="nav" on:click={handleLogout}>- Logout</div> -->
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <div class="nav" on:click={handleLogout}>- Logout</div>
             </div>
         {/if}
     </div>
@@ -274,7 +180,7 @@
 
     .navbar {
         border-top: 1px dotted rgb(3, 65, 42);
-        background: rgba(108, 108, 108, 0.037);
+        background: rgba(9, 33, 26, 0.822);
         text-align: left;
         padding-left: 1em;
     }
@@ -282,24 +188,31 @@
     .nav {
         line-height: 3em;
         border-bottom: 1px solid rgba(128, 128, 128, 0.182);
-        font-weight: 500;
-        color: rgb(3, 65, 42);
+        font-weight: 400;
+        color: #f2f2f2c5;
         display: flex;
+        font-size: 12px;
     }
 
     /* .nicon {
         
     } */
 
-    .ntext {
-        padding-left: 0.5em;
-        padding-top: 1px;
-    }
-
     .mobileSearchBar {
         border-top: 1px dotted rgb(3, 65, 42);
         background: rgba(108, 108, 108, 0.037);
         /* padding-inline: 0.4em; */
         padding: 0.4em;
+    }
+
+    .welcomeTag {
+        text-align: right;
+        line-height: 3em;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.182);
+        font-weight: 600;
+        font-size: 12px;
+        padding-right: 1em;
+        color: rgb(221, 221, 221);
+
     }
 </style>

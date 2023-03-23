@@ -3,6 +3,9 @@
     import { Link } from "svelte-navigator";
     import { Confirm } from "notiflix/build/notiflix-confirm-aio";
     import { onMount } from "svelte";
+    import { getLiuDetails, logout } from "../scripts/js/methods";
+
+    let liuDetails = getLiuDetails();
 
     const handleLogout = () => {
         Confirm.show(
@@ -12,9 +15,7 @@
             "No",
             () => {
                 //   logout
-                window.sessionStorage.removeItem("ziadaCpdLia");
-
-                window.location.reload();
+                logout();
             },
             () => {
                 //    cancel
@@ -23,13 +24,15 @@
         );
     };
 
-    onMount(() => {});
+    onMount(() => {
+        // console.log(liuDetails);
+    });
 </script>
 
 <main>
     <div class="wrapper">
         <div class="profileBox">
-            <div class="ziada">ZIADA</div>
+            <div class="ziada">Ziada</div>
             <div class="lite">Lite</div>
             <div class="tm">
                 <sup>
@@ -40,7 +43,7 @@
 
         <!-- profileMenu -->
         <div class="profileMenu segment">
-            <div class="welcomeText">Howdey! Welcome Back</div>
+            <div class="welcomeText">Welcome Back ({liuDetails.u})</div>
             <br />
             <div class="profileMenuNavContainer">
                 <Link to="profile">
@@ -55,15 +58,15 @@
                     </div>
                 </Link>
 
-                <Link to="settings">
+                <Link to="/issues">
                     <div class="profileMenuNav">
-                        <i class="ri-chat-new-line" /> &nbsp; &nbsp; Messages
+                        <i class="ri-customer-service-line" /> &nbsp; &nbsp; Support
                     </div>
                 </Link>
 
-                <Link to="settings">
+                <Link to="/about">
                     <div class="profileMenuNav">
-                        <i class="ri-question-line" /> &nbsp; &nbsp; Help
+                        <i class="ri-question-line" /> &nbsp; &nbsp; About
                     </div>
                 </Link>
 
@@ -91,7 +94,7 @@
         font-weight: 700;
         color: rgb(3, 65, 42);
         margin-top: 1em;
-        padding-top: .5em;
+        padding-top: 0.5em;
         display: flex;
         justify-content: center;
     }
@@ -119,14 +122,20 @@
         text-align: center;
         border-bottom: 1px solid rgba(128, 128, 128, 0.142);
         padding-bottom: 0.2em;
+        font-weight: 600;
+        color: black;
     }
 
     .lite {
-        font-weight: 100;
-        color: rgb(31, 158, 57);
+        font-weight: 600;
+        color: rgb(16, 139, 98);
     }
 
     .tm {
-        color: rgb(31, 158, 57);
+        color: rgb(16, 139, 98);
+    }
+
+    .ziada {
+        color: rgba(240, 248, 255, 0.9);
     }
 </style>

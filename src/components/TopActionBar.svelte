@@ -50,7 +50,7 @@
     }
 
     .icon-btn {
-        color: rgb(3, 65, 42);
+        color: #f2f2f2;
         /* padding-top: 5px; */
     }
 

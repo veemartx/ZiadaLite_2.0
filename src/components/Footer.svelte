@@ -20,6 +20,7 @@
     main {
         padding-top: 1em;
         padding-bottom: 1em;
+        color: aliceblue;
     }
 
     .content {

@@ -3,7 +3,7 @@
 
 <main>
     <div class="logo">
-        <div class="ziada">ZIADA</div>
+        <div class="ziada">Ziada</div>
 
         <div class="lite">Lite</div>
         <div class="tm">
@@ -13,10 +13,11 @@
         </div>
     </div>
 
-    <div class="tagLine">Dead & Short Expiry Management</div>
+    <div class="tagLine">Dead & Short Exp Management</div>
 </main>
 
 <style>
+
     .logo {
         display: flex;
         padding-top: 8px;
@@ -25,24 +26,26 @@
 
     .ziada {
         font-size: 20px;
-        font-weight: 900;
+        font-weight: 600;
         padding-top: 0.1em;
+        color: #fff;
     }
 
     .lite {
-        font-weight: 100;
+        font-weight: 600;
         font-size: 20px;
         padding-top: 0.1em;
-        color: rgb(31, 158, 57);
+        color: rgb(16, 139, 98);
     }
 
     .tm {
-        color: rgb(31, 158, 57);
+        color: rgb(16, 139, 98);
     }
 
     .tagLine {
         font-size: 7px;
         margin-top: -12px;
+        color: #fff;
     }
 
     @media only screen and (min-width: 640px) {
@@ -53,25 +56,20 @@
         }
 
         .ziada {
-            font-size: 29px;
-            font-weight: 900;
+            font-size: 27px;
+            font-weight: 700;
             padding-top: 0.1em;
         }
 
         .lite {
-            font-weight: 100;
-            font-size: 29px;
-            padding-top: 0.1em;
-            color: rgb(31, 158, 57);
-        }
-
-        .tm {
-            color: rgb(31, 158, 57);
+            color: rgb(16, 139, 98);
+            font-size: 27px;
+            font-weight: 600;
         }
 
         .tagLine {
             font-size: 9px;
-            margin-top: -8px;
+            margin-top: -1px;
         }
     }
 </style>

@@ -1,0 +1,109 @@
+/* variable */
+
+:root {
+    --main-pri-color: rgb(196, 55, 13);
+    --main-btn-color: orange;
+    --main-sec-color: rgb(214, 60, 33);
+    --main-pri-txt-color: rgb(252, 252, 252);
+    --main-sec-txt-color: rgb(31, 31, 31);
+    --main-title-color: rgb(241, 60, 14);
+}
+
+/* login page  */
+
+.lBody {
+    background-color: var(--main-pri-color);
+}
+
+/* top main bar  */
+
+.topMainBar {
+    background-color: var(--main-pri-color);
+}
+
+/* main side nav bg  */
+
+.mainSideBar {
+    background-color: var(--main-sec-color);
+}
+
+/* side navigation  */
+
+.s_nav a {
+    color: var(--main-pri-txt-color);
+}
+
+/* table titles */
+
+.ttitle {
+    color: var(--main-title-color) !important;
+}
+
+/* main Title */
+
+.mainTitle {
+    color: var(--main-title-color);
+}
+
+.miniNavCol a {
+    color: var(--main-title-color);
+}
+
+/* mini Nav */
+
+.miniNav {
+    display: inline-flexbox;
+    text-align: right;
+}
+
+.miniNavCol {
+    display: inline-flex;
+    /* font-size: 17px; */
+    font-weight: 600;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.sideFloatingMenu{
+    background: rgba(192, 16, 16, 0);
+    position: fixed;
+    height: 100%;
+    z-index: 100000;
+    top: 0;
+    right: 0;
+    width: 0;
+}
+
+.arrow_box {
+	position: relative;
+    margin-top: 30vh;
+   
+}
+
+
+.arrow_ {
+	right: 100%;
+	top: 30%;
+	border: solid transparent;
+	height: 0;
+	width: 0;
+	position: absolute;
+    padding-left: 2em;
+    font-size: 30px;
+}
+
+.arrow_ {
+	border-color: rgba(136, 183, 213, 0);
+	border-right-color: rgba(128, 39, 133, 0.404);
+	border-width: 50px;
+    /* margin-top: -30px; */
+    cursor: pointer;
+    
+}
+
+.floatingMenuContent{
+    display: inline-block;
+    height: 20em;
+}
+
+

@@ -1,7 +1,12 @@
 <script>
     import { Route, Router } from "svelte-navigator";
     import Dash from "../components/Dash.svelte";
+    import Footer from "../components/Footer.svelte";
     import Header from "../components/Header.svelte";
+    import Products from "./Products.svelte";
+    import Reports from "./Reports.svelte";
+    import Transfers from "./Transfers.svelte";
+    import Trash from "./Trash.svelte";
 </script>
 
 <main>
@@ -11,13 +16,39 @@
 
     <div class="vspacer" />
 
+    <div class="loadingBar" />
+
     <div class="mainContentContainer">
         <Router>
-            <Route to="/">
+            <Route path="/">
                 <Dash />
+            </Route>
+
+            <Route path="/dash">
+                <Dash />
+            </Route>
+
+            <Route path="/reports/*">
+                <Reports />
+            </Route>
+
+            <Route path="/transfers/*">
+                <Transfers />
+            </Route>
+
+            <Route path="/trash/*">
+                <Trash />
+            </Route>
+
+            <Route path="/products/*">
+                <Products />
             </Route>
         </Router>
     </div>
+
+    <footer>
+        <Footer />
+    </footer>
 </main>
 
 <style>
@@ -38,11 +69,14 @@
 
     .mainContentContainer {
         min-height: 120vh;
-        max-height: 900vh;
+        /* max-height: 900vh; */
         overflow: auto;
-        margin-inline: 0.4em;
+        margin-inline: 0.6em;
         /* background: red; */
     }
+
+
+    
 
     @media only screen and (min-width: 640px) {
         .vspacer {
@@ -55,6 +89,7 @@
             max-height: 900vh;
             overflow: auto;
             margin-inline: 0;
+            padding-top: 1em;
         }
     }
 </style>
