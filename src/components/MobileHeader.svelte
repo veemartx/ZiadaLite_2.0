@@ -3,7 +3,7 @@
     import { Link, useLocation } from "svelte-navigator";
     import { Confirm } from "notiflix/build/notiflix-confirm-aio";
     import TopSearch from "./TopSearch.svelte";
-    import { getLiuDetails } from "../scripts/js/methods";
+    import { getLiuDetails, logout } from "../scripts/js/methods";
 
     let liuDetails = getLiuDetails();
 
@@ -40,7 +40,6 @@
 
     const handleLogout = () => {
         hideNav($location);
-
         Confirm.show(
             "Logout",
             "Logout From This Device?",
@@ -48,9 +47,7 @@
             "No",
             () => {
                 //   logout
-                window.sessionStorage.removeItem("ziadaCpdLis");
-
-                window.location.reload();
+                logout();
             },
             () => {
                 //    cancel
@@ -117,7 +114,7 @@
                 <div class="welcomeTag">
                     Welcome Back ({liuDetails.u})
                 </div>
-                <Link to="/new">
+                <Link to="/products/new">
                     <div class="nav">- New</div>
                 </Link>
 
@@ -213,6 +210,5 @@
         font-size: 12px;
         padding-right: 1em;
         color: rgb(221, 221, 221);
-
     }
 </style>

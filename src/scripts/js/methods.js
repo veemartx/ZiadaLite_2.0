@@ -1,4 +1,7 @@
-
+// @ts-nocheck
+import dayjs from "dayjs";
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+dayjs.extend(customParseFormat)
 
 
 export const addCommas = (number, dp) => {
@@ -7,7 +10,6 @@ export const addCommas = (number, dp) => {
         maximumFractionDigits: dp,
     });
 }
-
 
 
 export const numberFormat = (number, options) => {
@@ -159,4 +161,82 @@ export const currentAndPreviousMonths = () => {
         previousMonth: previousMonth
     }
 
+}
+
+
+export const getExpiryDateConstraints = () => {
+    let now = dayjs();
+
+    let ninthMonthFromNow = dayjs(now).add(9, 'months').endOf('month').format('YYYY-MM');
+    let eighthMonthFromNow = dayjs(now).add(8, 'months').endOf('month').format('YYYY-MM');
+
+
+    return {
+        minDeadStockExpiryMonth: ninthMonthFromNow,
+        maxShortExpiryMonth: eighthMonthFromNow
+    };
+}
+
+export const getMaxShortExpiryDate = () => {
+
+    let date = new Date();
+
+    let year = date.getFullYear();
+
+    let month = date.getMonth() + 1;
+
+    let day = date.getDate();
+
+    if (month < 10) {
+        month = "0" + month;
+    }
+
+    if (day < 10) {
+        day = "0" + day;
+
+    }
+
+    let todaysDate = year + "-" + month + "-" + day;
+
+    // console.log(todaysDate);
+
+    // add
+    var result = new Date(todaysDate);
+    result.setDate(result.getDate() + 250);
+
+    // console.log(result);
+
+    var lastDayOfMonth = new Date(result.getFullYear(), result.getMonth() + 1, 0);
+
+    let lastDayYear = lastDayOfMonth.getFullYear();
+
+    let lastDayMonth = lastDayOfMonth.getMonth() + 1;
+
+    let lastDayDate = lastDayOfMonth.getDate();
+
+    if (lastDayMonth < 10) {
+        lastDayMonth = "0" + lastDayMonth;
+    }
+
+    if (lastDayDate < 10) {
+        lastDayDate = "0" + lastDayDate;
+
+    }
+
+    let lastDayMonthDate = lastDayYear + "-" + lastDayMonth
+
+    // console.log(lastDayMonthDate);
+    return lastDayMonthDate;
+
+}
+
+
+// returns the last day of the ninth mont from today
+export const getMinDeadStockExpiryDate = () => {
+
+    let date = new Date();
+
+    let ninthMonthFromNow = dayjs(date).add(9, 'months')
+
+    return ninthMonthFromNow;
 }

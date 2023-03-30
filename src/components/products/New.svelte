@@ -2,7 +2,7 @@
     // @ts-nocheck
     import { onMount } from "svelte";
     import Breadcrumbs from "./Breadcrumbs.svelte";
-    import Notiflix, { Confirm, Notify, Report } from "notiflix";
+    import { Notify, Report } from "notiflix";
     import { apiBaseUrl } from "../../config/config";
     import axios from "axios";
     import { v4 } from "uuid";
@@ -10,6 +10,16 @@
     import AdditionsIcon from "../../assets/icons/product-additions.png";
     import AuthToken from "../AuthToken.svelte";
     import { navigate } from "svelte-navigator";
+    import { getExpiryDateConstraints } from "../../scripts/js/methods";
+    import imageCompression from "browser-image-compression";
+    import { fade } from "svelte/transition";
+
+    const imageCompressorOptions = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 768,
+        useWebWorker: true,
+        initialQuality: 0.3,
+    };
 
     let ZL_LIU = window.localStorage.ZL_LIU;
 
@@ -19,8 +29,11 @@
 
     let showAuthTokenModal = true;
 
+    let expiryDateMessage;
     // products to be passed to assisted additions
     let productsList = [];
+
+    let firstLetters = [];
 
     //
     let approvedDeadStockAdditions = [];
@@ -45,6 +58,8 @@
 
     let showAssistedProductCreationModal = false;
 
+    let compressingImageLoader = false;
+
     let expiryMonth;
 
     let productType;
@@ -52,6 +67,15 @@
     let productCode;
 
     let productMainImage = [];
+
+    let compressedProductImage;
+
+    $: {
+        if (productMainImage.length > 0) {
+            // console.log(productMainImage[0]);
+            compressImage();
+        }
+    }
 
     let packSize;
 
@@ -67,6 +91,27 @@
 
     let addCreateProductListBtn = false;
 
+    let minDeadStockExpiryMonth;
+
+    let maxShortExpiryMonth;
+
+    $: {
+        if (productType) {
+            if (productType == "Dead Stock") {
+                productsList = approvedDeadStockAdditions;
+                expiryDateMessage =
+                    "Earliest Allowed Expiry - Dead Stock " +
+                    minDeadStockExpiryMonth;
+            } else if (productType == "Short Exp") {
+                productsList = excelProductsList;
+                expiryDateMessage =
+                    "Latest Allowed Expiry - Short Exp " + maxShortExpiryMonth;
+            }
+
+            showAssistedProductCreationModal = true;
+        }
+    }
+
     const authTokenSuccess = () => {
         showAuthTokenModal = false;
 
@@ -77,6 +122,34 @@
         // showAuthTokenModal = false;
         if (confirm("Addition Authentication cannot be cancelled. Go back?")) {
             navigate(-1);
+        }
+    };
+
+    const compressImage = async () => {
+        const imageFile = productMainImage[0];
+
+        compressingImageLoader = true;
+
+        // console.log("originalFile instanceof Blob", imageFile instanceof Blob); // true
+        // console.log(`originalFile size ${imageFile.size / 1024} KB`);
+        try {
+            const compressedFile = await imageCompression(
+                imageFile,
+                imageCompressorOptions
+            );
+            // console.log(
+            //     "compressedFile instanceof Blob",
+            //     compressedFile instanceof Blob
+            // ); // true
+            // console.log(`compressedFile size ${compressedFile.size / 1024} KB`); // smaller than maxSizeMB
+
+            compressedProductImage = compressedFile;
+
+            compressingImageLoader = false;
+        } catch (error) {
+            compressingImageLoader = true;
+
+            console.log(error);
         }
     };
 
@@ -103,7 +176,7 @@
             return;
         }
 
-        if (productMainImage.length == 0) {
+        if (!compressedProductImage) {
             Report.failure("Main Image", "Select Product Image", "Okay");
 
             return;
@@ -111,13 +184,18 @@
 
         let fd = new FormData();
 
-        // let fileType = productMainImage[0].name.split(".")[1];
+        // let fileType = compressedProductImage.name.split(".")[1];
+
+        let producImage = new File(
+            [compressedProductImage],
+            compressedProductImage.name
+        );
 
         // gallery
         fd.append("productId", v4());
 
         // append image file
-        fd.append("productImage", productMainImage[0]);
+        fd.append("productImage", producImage);
 
         // validate the inputs
         fd.append("productName", productName);
@@ -229,9 +307,31 @@
         }
     };
 
+    const getFirstLetters = async () => {
+        try {
+            let response = await axios({
+                method: "GET",
+                url: `${apiBaseUrl}getFirstLetters.php`,
+            });
+
+            let res = response.data;
+
+            firstLetters = res;
+
+            // console.log(firstLetters);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     onMount(async () => {
+        getFirstLetters();
         getDeadStockApprovedList();
         getProductsList();
+
+        maxShortExpiryMonth = getExpiryDateConstraints().maxShortExpiryMonth;
+        minDeadStockExpiryMonth =
+            getExpiryDateConstraints().minDeadStockExpiryMonth;
     });
 </script>
 
@@ -251,7 +351,7 @@
                     <div class="leftCol">
                         <div class="segment">
                             <div class="titlebar">
-                                <div class="segTitle">Product Details</div>
+                                <div class="title">Product Details</div>
                             </div>
                             .
                             <br />
@@ -261,23 +361,7 @@
                                     <select
                                         name="productType"
                                         id="productType"
-                                        on:change={(e) => {
-                                            if (e.target.value != "") {
-                                                productType = e.target.value;
-
-                                                if (
-                                                    productType == "Dead Stock"
-                                                ) {
-                                                    productsList =
-                                                        approvedDeadStockAdditions;
-                                                } else {
-                                                    productsList =
-                                                        excelProductsList;
-                                                }
-
-                                                showAssistedProductCreationModal = true;
-                                            }
-                                        }}
+                                        bind:value={productType}
                                     >
                                         <option value="">Select Type</option>
                                         <option value="Dead Stock"
@@ -320,9 +404,9 @@
                             </div>
                         </div>
 
-                        <div class="segment">
+                        <div class="segment" style="margin-top: 1em;">
                             <div class="titlebar ">
-                                <div class="segTitle">Product Gallery</div>
+                                <div class="title">Product Gallery</div>
 
                                 <div class="actionBtns" />
                             </div>
@@ -363,7 +447,7 @@
                                             type="file"
                                             name="productMainImage"
                                             id="productMainImage"
-                                            accept=".jpeg,.png,.webp,jpg"
+                                            accept=".jpeg,.png,.webp,.jpg"
                                             bind:files={productMainImage}
                                         />
                                     </div>
@@ -372,6 +456,29 @@
                                         class="fieldInput"
                                         style="font-size: 12px;"
                                     >
+                                        {#if compressingImageLoader}
+                                            <div
+                                                transition:fade
+                                                class="compressingImageMessage"
+                                            >
+                                                <div class="">
+                                                    Compressing Product Image.
+                                                    Please Wait
+                                                </div>
+                                                <div class="loadingSpinner">
+                                                    <span
+                                                        style="font-size: 25px;"
+                                                    >
+                                                        <i
+                                                            class="ri-loader-line"
+                                                        /></span
+                                                    >
+
+                                                    <div class="loader" />
+                                                </div>
+                                            </div>
+                                        {/if}
+
                                         <br />
                                         <div
                                             class="selectedProductGalleryPreview"
@@ -388,13 +495,42 @@
                                                         />
 
                                                         <p>
-                                                            {file.name}({Math.ceil(
+                                                            Original: {file.name}({Math.ceil(
                                                                 file.size / 1024
-                                                            )}
-                                                            KB)
+                                                            ) > 1024
+                                                                ? Math.ceil(
+                                                                      file.size /
+                                                                          1024 /
+                                                                          1024
+                                                                  ) + "MB"
+                                                                : Math.ceil(
+                                                                      file.size /
+                                                                          1024
+                                                                  ) + "KB"})
                                                         </p>
                                                     </div>
                                                 {/each}
+                                            {/if}
+
+                                            <!-- compressed -->
+                                            {#if compressedProductImage}
+                                                <div class="preview">
+                                                    <img
+                                                        id="compressedImagePreview"
+                                                        src={URL.createObjectURL(
+                                                            compressedProductImage
+                                                        )}
+                                                        alt="preview"
+                                                    />
+
+                                                    <p>
+                                                        Compressed: {compressedProductImage.name}({Math.ceil(
+                                                            compressedProductImage.size /
+                                                                1024
+                                                        )}
+                                                        KB)
+                                                    </p>
+                                                </div>
                                             {/if}
                                         </div>
                                     </div>
@@ -406,56 +542,81 @@
                     <div class="rightCol">
                         <div class="segment">
                             <div class="titleBar">
-                                <div class="title">Product Extra Details</div>
+                                <div class="title">Expiry Details</div>
                             </div>
 
                             <div class="">
-                                <div class="fieldInputs">
-                                    <div class="fieldInput">
-                                        <label
-                                            for="expiry"
-                                            style="color:crimson;font-weight:bold;"
-                                            >Has Expiry?</label
-                                        >
+                                {#if expiryDateMessage}
+                                    <div class="expiryDateMessage">
+                                        {#if expiry}
+                                            {expiryDateMessage}
+                                        {:else}
+                                            This Item Doesn't Have An Expiry
+                                            Date
+                                        {/if}
+                                    </div>
+                                {/if}
 
-                                        <div class="formInput">
-                                            <div class="ui toggle checkbox">
-                                                <input
-                                                    type="checkbox"
-                                                    name="expiry"
-                                                    checked={expiry}
-                                                    on:change={() => {
-                                                        expiry = !expiry;
-                                                    }}
-                                                />
-                                                <label for="expiry" />
+                                <div class="fieldInputs">
+                                    {#if productType == "Dead Stock"}
+                                        <div class="fieldInput">
+                                            <label
+                                                for="expiry"
+                                                style="color:crimson;font-weight:bold;"
+                                                >Has Expiry?</label
+                                            >
+
+                                            <div class="formInput">
+                                                <div class="ui toggle checkbox">
+                                                    <input
+                                                        type="checkbox"
+                                                        name="expiry"
+                                                        checked={expiry}
+                                                        on:change={() => {
+                                                            expiry = !expiry;
+                                                        }}
+                                                    />
+                                                    <label for="expiry" />
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    {/if}
 
-                                    <div class="fieldInput">
-                                        {#if expiry}
+                                    {#if expiry}
+                                        <div class="fieldInput">
                                             <label for="name">Expiry Date</label
                                             >
 
                                             <div class="formInput">
-                                                <input
-                                                    type="month"
-                                                    name="expiryMonth"
-                                                    id="expiryMonth"
-                                                    required
-                                                    bind:value={expiryMonth}
-                                                />
+                                                {#if productType == "Dead Stock"}
+                                                    <input
+                                                        type="month"
+                                                        name="expiryMonth"
+                                                        id="expiryMonth"
+                                                        required
+                                                        min={minDeadStockExpiryMonth}
+                                                        bind:value={expiryMonth}
+                                                    />
+                                                {:else if productType == "Short Exp"}
+                                                    <input
+                                                        type="month"
+                                                        name="expiryMonth"
+                                                        id="expiryMonth"
+                                                        max={maxShortExpiryMonth}
+                                                        required
+                                                        bind:value={expiryMonth}
+                                                    />
+                                                {/if}
                                             </div>
-                                        {/if}
-                                    </div>
+                                        </div>
+                                    {/if}
                                 </div>
                             </div>
                         </div>
 
-                        <div class="segment">
+                        <div class="segment" style="margin-top: 1em;">
                             <div class="titlebar ">
-                                <div class="segTitle">Product Details</div>
+                                <div class="title">Extra Details</div>
                             </div>
 
                             <br />
@@ -562,6 +723,8 @@
 {#if showAssistedProductCreationModal}
     <AssistedProductCreationModal
         {productsList}
+        {firstLetters}
+        {productType}
         on:close={() => {
             showAssistedProductCreationModal = false;
         }}
@@ -576,26 +739,16 @@
     .mainContainer {
         display: flex;
         flex-direction: column;
+        justify-content: space-between;
     }
 
     .leftCol {
         flex: 7;
-        display: flex;
-        flex-direction: column;
     }
 
     .rightCol {
         flex: 3;
-    }
-
-    .segment {
-        margin-bottom: 1.6em;
-        /* background: orange; */
-        width: 100%;
-    }
-
-    .segTitle {
-        font-weight: 500;
+        margin-top: 1em;
     }
 
     input {
@@ -664,6 +817,48 @@
     .toggle {
         padding-top: 1em;
     }
+
+    .expiryDateMessage {
+        background-color: rgba(255, 0, 0, 0.251);
+        padding: 1em;
+        font-weight: 600;
+        text-align: center;
+        color: crimson;
+        margin-bottom: 0.4em;
+    }
+
+    .compressingImageMessage {
+        background-color: rgba(11, 159, 51, 0.251);
+        padding: 1em;
+        font-weight: 600;
+        text-align: center;
+        color: rgb(42, 130, 83);
+        margin-bottom: 0.5em;
+        margin-top: 1em;
+    }
+
+    .loadingSpinner {
+        padding-top: 10px;
+    }
+
+    @-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
     @media only screen and (min-width: 640px) {
         .mainContainer {
             display: flex;
@@ -672,12 +867,13 @@
 
         .rightCol {
             flex: 3;
-            padding-inline: 1em;
-            margin-left: 0.8em;
+            padding-left: 0.4em;
+            margin-left: 0.1em;
+            margin-top: 0;
         }
 
         .leftCol {
-            margin-right: 0.8em;
+            margin-right: 0.1em;
         }
     }
 </style>

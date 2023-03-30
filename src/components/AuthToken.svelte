@@ -71,7 +71,7 @@
         if (authTknsString != undefined) {
             authTokens = JSON.parse(authTknsString);
 
-            console.log(authTokens);
+            // console.log(authTokens);
         }
     });
 </script>
@@ -260,6 +260,9 @@
         box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     }
 
+    .modalContent {
+        margin-top: -10em;
+    }
     @media only screen and (min-width: 640px) {
     }
 </style>

@@ -7,7 +7,7 @@
 
     let showUnfulfilledPrintPanel = false;
 
-    $: [console.log(regionsSummary)];
+    // $: [console.log(regionsSummary)];
 
     onMount(() => {});
 </script>

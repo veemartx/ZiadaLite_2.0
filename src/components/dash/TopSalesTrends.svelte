@@ -3,11 +3,16 @@
     import axios from "axios";
     import { onMount } from "svelte";
     import { apiBaseUrl } from "../../config/config";
-    import { addCommas } from "../../scripts/js/methods";
+    import {
+        addCommas,
+        currentAndPreviousMonths,
+    } from "../../scripts/js/methods";
 
     let topSaleTargets = [];
 
     let latestSales = [];
+
+    let currentMonth;
 
     const getMainDashStats = async () => {
         let response = await axios({
@@ -21,11 +26,13 @@
 
         latestSales = res.latestSales;
 
-        console.log(res);
+        // console.log(res);
     };
 
     onMount(() => {
         getMainDashStats();
+
+        currentMonth = currentAndPreviousMonths().currentMonth;
     });
 </script>
 
@@ -38,6 +45,12 @@
 
             <div class="contentContainer">
                 <div class="col targetsContainer">
+                    <div class="segmentTitle">
+                        {#if currentMonth}
+                            {currentMonth} Sales Target Rank
+                        {/if}
+                    </div>
+
                     <table
                         class="ui very  basic striped unstackable single line table"
                     >
@@ -86,6 +99,9 @@
                 </div>
 
                 <div class="col salesContainer">
+                    <div class="segmentTitle">
+                        Latest Sale Transactions (Live)
+                    </div>
                     <table
                         class="ui very  basic striped unstackable single line table"
                     >
@@ -159,7 +175,7 @@
     }
 
     .salesContainer {
-        margin-top: 1em;
+        margin-top: 1.5em;
     }
 
     .percentageVariance {
@@ -174,6 +190,15 @@
     .short {
         color: crimson;
         font-weight: 600;
+    }
+
+    .segmentTitle {
+        border-bottom: 1px solid rgba(163, 163, 163, 0.379);
+        padding: 0.4em;
+        font-weight: 600;
+    }
+    .targetsContainer {
+        border-bottom: 1px solid rgba(128, 128, 128, 0.585);
     }
 
     @media only screen and (min-width: 640px) {
