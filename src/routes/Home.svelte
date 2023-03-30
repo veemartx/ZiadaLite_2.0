@@ -1,12 +1,16 @@
 <script>
     import { Route, Router } from "svelte-navigator";
+    import ActionButton from "../components/ActionButton.svelte";
     import Dash from "../components/Dash.svelte";
     import Footer from "../components/Footer.svelte";
     import Header from "../components/Header.svelte";
+    import Sidebar from "../components/Sidebar.svelte";
     import Products from "./Products.svelte";
     import Reports from "./Reports.svelte";
     import Transfers from "./Transfers.svelte";
     import Trash from "./Trash.svelte";
+
+    let showSidebarModal = false;
 </script>
 
 <main>
@@ -16,7 +20,6 @@
 
     <div class="vspacer" />
 
-    <div class="loadingBar" />
 
     <div class="mainContentContainer">
         <Router>
@@ -51,6 +54,22 @@
     </footer>
 </main>
 
+{#if showSidebarModal}
+    <Sidebar
+        on:close={() => {
+            showSidebarModal = false;
+        }}
+    />
+{/if}
+
+<!-- action button -->
+<ActionButton
+    on:open={() => {
+        showSidebarModal = true;
+    }}
+/>
+
+<!-- action button -->
 <style>
     header {
         background-color: rgb(255, 255, 255);
@@ -75,8 +94,10 @@
         /* background: red; */
     }
 
+    footer {
+        background: var(--background-primary);
+    }
 
-    
 
     @media only screen and (min-width: 640px) {
         .vspacer {

@@ -2,11 +2,11 @@
     import axios from "axios";
     import { onMount } from "svelte";
     import { apiBaseUrl } from "../../config/config";
+    // @ts-ignore
     import BranchPerformance from "./BranchPerformance.svelte";
 
     import ExpiringCurrentMonth from "./ExpiringCurrentMonth.svelte";
     import LatestTransactions from "./LatestTransactions.svelte";
-
 
     let expiringCurrentMonth = [];
 
@@ -27,8 +27,6 @@
         latestTransactions = res.latestTransactions;
 
         branchPerfomance = res.branchPerformance;
-
-        // console.log(res);
     };
 
     onMount(() => {
@@ -43,6 +41,7 @@
                 <BranchPerformance {branchPerfomance} />
             </div>
             <br />
+
             <!-- expiring current month -->
             <div class="expiringCurrentMonth">
                 <ExpiringCurrentMonth {expiringCurrentMonth} />

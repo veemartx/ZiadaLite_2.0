@@ -69,7 +69,7 @@
 
         .tagLine {
             font-size: 9px;
-            margin-top: -1px;
+            margin-top: -4px;
         }
     }
 </style>

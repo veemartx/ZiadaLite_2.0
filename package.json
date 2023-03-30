@@ -19,6 +19,7 @@
     "notiflix": "^3.2.5",
     "remixicon": "^2.5.0",
     "svelte-apexcharts": "^1.0.2",
-    "svelte-navigator": "^3.2.2"
+    "svelte-navigator": "^3.2.2",
+    "uuid": "^9.0.0"
   }
 }

@@ -6,7 +6,7 @@
     <div class="wrapper">
         <div class="content">
             <div class="qlinksColumn">
-                <Link to="/new">
+                <Link to="/products/new">
                     <div class="qlink">
                         <div class="qli"><i class="ri-add-circle-line" /></div>
                         <div class="qlt">New</div>
@@ -80,7 +80,7 @@
     @media only screen and (min-width: 640px) {
         main {
             background: #fff;
-            margin-top: .5em;
+            margin-top: 0.5em;
         }
     }
 </style>

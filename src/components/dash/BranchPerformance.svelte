@@ -1,9 +1,14 @@
 <script>
     import { onMount } from "svelte";
     import { apiBaseUrl } from "../../config/config";
-    import { addCommas } from "../../scripts/js/methods";
+    import {
+        addCommas,
+        dashCurrentBranchTargetMonth,
+    } from "../../scripts/js/methods";
 
     export let branchPerfomance = [];
+
+    let branchPerfomanceTargetMonth = "";
 
     let currentBranchPerformance = [];
 
@@ -14,7 +19,9 @@
     const handleCurrenctBranchPerfomance = () => {
         showCurrenctBranchPerfomance = true;
     };
-    onMount(() => {});
+    onMount(() => {
+        branchPerfomanceTargetMonth = dashCurrentBranchTargetMonth();
+    });
 </script>
 
 <main>
@@ -29,8 +36,9 @@
                     <div class="branchPerfomanceBar">
                         <div class="perfomanceCol segmente">
                             <div class="pTitle">
-                                Overall Top Performing ( Mar/Apr ) 16th-15th
-
+                                Overall Top Performing <span class="cmtpd"
+                                    >({@html branchPerfomanceTargetMonth})
+                                </span>
                                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                                 <span
                                     on:click={() => {
@@ -91,20 +99,22 @@
 
                         <div class="perfomanceCol segmente">
                             <div class="pTitle">
-                                Overall Bottom Performing ( Mar/Apr ) 16th-15th
+                                Overall Bottom Performing <span class="cmtpd"
+                                    >({@html branchPerfomanceTargetMonth})
 
-                                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                <span
-                                    on:click={() => {
-                                        bpTitle = "Overall";
+                                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                    <span
+                                        on:click={() => {
+                                            bpTitle = "Overall";
 
-                                        currentBranchPerformance =
-                                            branchPerfomance;
-                                        handleCurrenctBranchPerfomance();
-                                    }}
-                                    class="moreIcon"
-                                >
-                                    <i class="eye icon" />
+                                            currentBranchPerformance =
+                                                branchPerfomance;
+                                            handleCurrenctBranchPerfomance();
+                                        }}
+                                        class="moreIcon"
+                                    >
+                                        <i class="eye icon" />
+                                    </span>
                                 </span>
                             </div>
                             <div class="tableContainer">
@@ -154,25 +164,28 @@
                     <div class="branchPerfomanceBar">
                         <div class="perfomanceCol segmente">
                             <div class="pTitle">
-                                Dead Stock Top Performing ( Mar/Apr ) 16th-15th
+                                Dead Stock Top Performing <span class="cmtpd"
+                                    >({@html branchPerfomanceTargetMonth})
+                                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                    <span
+                                        on:click={() => {
+                                            bpTitle = "Dead Stock";
 
-                                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                <span
-                                    on:click={() => {
-                                        bpTitle = "Dead Stock";
-
-                                        currentBranchPerformance =
-                                            branchPerfomance.sort((a, b) => {
-                                                return (
-                                                    b.deadStockVariance -
-                                                    a.deadStockVariance
+                                            currentBranchPerformance =
+                                                branchPerfomance.sort(
+                                                    (a, b) => {
+                                                        return (
+                                                            b.deadStockVariance -
+                                                            a.deadStockVariance
+                                                        );
+                                                    }
                                                 );
-                                            });
-                                        handleCurrenctBranchPerfomance();
-                                    }}
-                                    class="moreIcon"
-                                >
-                                    <i class="eye icon" />
+                                            handleCurrenctBranchPerfomance();
+                                        }}
+                                        class="moreIcon"
+                                    >
+                                        <i class="eye icon" />
+                                    </span>
                                 </span>
                             </div>
 
@@ -313,7 +326,8 @@
                     <div class="branchPerfomanceBar">
                         <div class="perfomanceCol segmente">
                             <div class="pTitle">
-                                Short Exp Top Performing ( Mar/Apr ) 16th-15th
+                                Short Exp Top Performing  <span class="cmtpd"
+                                >({@html branchPerfomanceTargetMonth})
 
                                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                                 <span
@@ -619,6 +633,10 @@
         float: right;
         color: rgb(51, 153, 66);
         cursor: pointer;
+    }
+
+    .cmtpd {
+        font-size: 10px;
     }
 
     @media only screen and (min-width: 640px) {

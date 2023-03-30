@@ -1,7 +1,24 @@
 <script>
+    import { onMount } from "svelte";
     import ComputerHeader from "./ComputerHeader.svelte";
-    import LoadingBar from "./LoadingBar.svelte";
     import MobileHeader from "./MobileHeader.svelte";
+
+    let showMainLoadingBar = false;
+
+    let loaded = 0;
+
+    const startLoading = () => {
+        setInterval(() => {
+            if (loaded < 100) {
+                loaded = loaded + 1;
+                showMainLoadingBar = true;
+            } else {
+                showMainLoadingBar = false;
+            }
+        }, 100);
+    };
+
+    onMount(() => {});
 </script>
 
 <main>
@@ -13,10 +30,6 @@
 
         <div class="computerHeader">
             <ComputerHeader />
-        </div>
-
-        <div class="loadingBar">
-            <!-- <LoadingBar /> -->
         </div>
     </div>
 </main>

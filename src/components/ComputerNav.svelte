@@ -9,8 +9,7 @@
     <div class="wrapper">
         <div class="content">
             <div class="compNav">
-
-                <Link to="/dash">
+                <Link to="/products/new">
                     <div class="nav">
                         <i class="ri-home-line" /> &nbsp; New &nbsp;
                     </div>
@@ -42,8 +41,7 @@
 
                 <Link to="/transfer-requests">
                     <div class="nav">
-                        <i class="ri-file-transfer-line" /> &nbsp; T-Requests
-                        &nbsp;
+                        <i class="ri-file-transfer-line" /> &nbsp; T-Requests &nbsp;
                     </div>
                 </Link>
 

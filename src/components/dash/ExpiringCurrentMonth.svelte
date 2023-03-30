@@ -1,5 +1,7 @@
 <script>
+    import { onMount } from "svelte";
     import { Link } from "svelte-navigator";
+    import { currentAndPreviousMonths } from "../../scripts/js/methods";
 
     export let expiringCurrentMonth = [];
 
@@ -15,17 +17,7 @@
 
     let offset;
 
-    let today = new Date();
-
-    // set currentMonth
-    today.setMonth(today.getMonth());
-
-    let currentMonth = today.toLocaleString("default", { month: "long" });
-
-    // set previousMonth
-    today.setMonth(today.getMonth() - 1);
-
-    let previousMonth = today.toLocaleString("default", { month: "long" });
+    let currentMonth = "";
 
     $: {
         offset = (currentPage - 1) * pageSize;
@@ -49,6 +41,10 @@
             pages = pages;
         }
     }
+
+    onMount(() => {
+        currentMonth = currentAndPreviousMonths().currentMonth;
+    });
 </script>
 
 <main>
@@ -56,7 +52,7 @@
         <div class="content">
             <div class="contentTitleBar">
                 <div class="contentTitle">
-                    Expiring This Month ({currentMonth})
+                    Expiring This Month ({currentMonth.slice(0,3)})
                 </div>
             </div>
             <div class="expiringCurrentMonthContainer">
@@ -162,7 +158,6 @@
         padding: 1em;
         margin-top: 1em;
     }
-
 
     .pagesCol {
         margin-top: 2em;

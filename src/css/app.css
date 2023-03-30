@@ -176,6 +176,100 @@ table {
   font-weight: 400 !important;
 }
 
+
+.modal {
+  background-color: rgba(0, 0, 0, 0.393);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+
+
+}
+
+.modalContent {
+  width: 80vw;
+  min-height: 10em;
+  overflow: auto;
+  border: 1px solid rgba(128, 128, 128, 0.148);
+  animation: grow .4s;
+  position: absolute;
+
+}
+
+
+.closeModal {
+  font-size: 30px;
+  cursor: pointer;
+}
+
+input {
+  background-color: rgba(94, 94, 94, 0.23);
+  border: none;
+  border-radius: 4px;
+  line-height: 2.5em;
+  width: 100%;
+}
+
+
+
+textarea {
+  background-color: rgba(94, 94, 94, 0.23);
+  border: none;
+  border-radius: 4px;
+  width: 100%;
+}
+
+
+
+select {
+  background-color: rgba(94, 94, 94, 0.23);
+  border: none;
+  border-radius: 4px;
+  line-height: 2.5em;
+  width: 100%;
+  height: 3em;
+}
+
+
+
+textarea:focus,
+input:focus {
+  outline: none;
+}
+
+input:focus {
+  outline: 1px solid var(--info-info);
+
+}
+
+textarea:focus {
+  outline: 1px solid var(--info-info);
+}
+
+
+@media only screen and (min-width:640px) {
+  .modalContent {
+    width: 30em;
+    min-height: 10em;
+    overflow: auto;
+    border: 1px solid rgba(128, 128, 128, 0.148);
+    animation: grow .4s;
+    position: absolute;
+
+  }
+
+}
+
+
+
+
 /* @media (prefers-color-scheme: dark) {
   :root {
     color: #213547;

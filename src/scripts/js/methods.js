@@ -90,3 +90,73 @@ export const capitalizeEveryFirstLetter = (n) => {
 
     return words;
 }
+
+
+export const dashCurrentBranchTargetMonth = () => {
+
+    let today = new Date();
+
+    let todaysDay = today.getUTCDate();
+
+    let firstTargetMonth;
+
+    let secondTargetMonth;
+
+
+    if (todaysDay < 15) {
+
+        // ftm.
+        today.setMonth(today.getMonth() - 1);
+
+        firstTargetMonth = today.toLocaleString('default', { month: 'long' });
+
+        // stm
+        today.setMonth(today.getMonth());
+
+        secondTargetMonth = today.toLocaleString('default', { month: 'long' });
+
+
+    } else {
+
+        // ftm.
+        today.setMonth(today.getMonth());
+
+        firstTargetMonth = today.toLocaleString('default', { month: 'long' });
+
+        // stm
+        today.setMonth(today.getMonth() + 1);
+
+        secondTargetMonth = today.toLocaleString('default', { month: 'long' });
+
+
+    }
+
+
+    // console.log(`${firstTargetMonth},${secondTargetMonth}`);
+
+    let targetMonth = firstTargetMonth.slice(0, 3) + ' 16<sup>th</sup> -' + secondTargetMonth.slice(0, 3) + ' 15<sup>th</sup>';
+
+    // console.log(month);
+    return targetMonth;
+}
+
+
+export const currentAndPreviousMonths = () => {
+    let today = new Date();
+
+    // set currentMonth
+    today.setMonth(today.getMonth());
+
+    let currentMonth = today.toLocaleString("default", { month: "long" });
+
+    // set previousMonth
+    today.setMonth(today.getMonth() - 1);
+
+    let previousMonth = today.toLocaleString("default", { month: "long" });
+
+    return {
+        currentMonth: currentMonth,
+        previousMonth: previousMonth
+    }
+
+}

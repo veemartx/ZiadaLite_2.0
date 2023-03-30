@@ -4,6 +4,7 @@
     import { onMount } from "svelte";
     import { apiBaseUrl } from "../../config/config";
     import ProductStats from "./ProductStats.svelte";
+    import RegionPerformance from "./RegionPerformance.svelte";
     import SalesStats from "./SalesStats.svelte";
 
     let regionsArray = [];
@@ -13,6 +14,8 @@
     let productStats = {};
 
     let saleStats = {};
+
+    let regionsSummary = [];
 
     const getMainDashStats = async () => {
         let response = await axios({
@@ -160,8 +163,79 @@
                 .reduce((partialSum, a) => partialSum + a, 0),
         };
 
+        regionsArray.forEach((region) => {
+            let filteredRegionBranches = branchesArray.filter((br) => {
+                if (br.region == region) {
+                    return br;
+                }
+            });
 
-        // console.log(branchesArray);
+            let regionObject = {
+                region: region,
+                products: filteredRegionBranches
+                    .map((p) => p.productsAtRisk)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+
+                productsValue: filteredRegionBranches
+                    .map((p) => p.productsAtRiskValue)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+
+                shortExp: filteredRegionBranches
+                    .map((p) => p.shortExpAtRisk)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+                shortExpValue: filteredRegionBranches
+                    .map((p) => p.shortExpAtRiskValue)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+                deadStock: filteredRegionBranches
+                    .map((p) => p.deadStockAtRisk)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+                deadStockValue: filteredRegionBranches
+                    .map((p) => p.deadStockAtRiskValue)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+
+                todaySales: filteredRegionBranches
+                    .map((p) => p.todaySales)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+
+                todaySalesValue: filteredRegionBranches
+                    .map((p) => p.todaySalesValue)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+
+                todayShortExpSalesValue: filteredRegionBranches
+                    .map((p) => p.todayShortExpSalesValue)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+
+                todayDeadStockSalesValue: filteredRegionBranches
+                    .map((p) => p.todayDeadStockSalesValue)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+
+                yesterdaySales: filteredRegionBranches
+                    .map((p) => p.yesterdaySales)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+
+                yesterdaySalesValue: filteredRegionBranches
+                    .map((p) => p.yesterdaySalesValue)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+
+                yesterdayShortExpSalesValue: filteredRegionBranches
+                    .map((p) => p.yesterdayShortExpSalesValue)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+
+                yesterdayDeadStockSalesValue: filteredRegionBranches
+                    .map((p) => p.yesterdayDeadStockSalesValue)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+
+                unfulfilled: filteredRegionBranches
+                    .map((p) => p.unfulfilledTransferReqs)
+                    .reduce((partialSum, a) => partialSum + a, 0),
+            };
+
+            regionsSummary.push(regionObject);
+        });
+
+        regionsSummary = regionsSummary;
+
+        // console.log(regionsSummary);
     };
 
     onMount(() => {
@@ -180,6 +254,9 @@
                 <ProductStats {productStats} />
             </div>
             <br />
+            <div class="regionsSummary">
+                <RegionPerformance {regionsSummary} />
+            </div>
         </div>
     </div>
 </main>
