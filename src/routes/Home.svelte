@@ -7,6 +7,7 @@
     import Sidebar from "../components/Sidebar.svelte";
     import Products from "./Products.svelte";
     import Reports from "./Reports.svelte";
+    import Settings from "./Settings.svelte";
     import Transfers from "./Transfers.svelte";
     import Trash from "./Trash.svelte";
 
@@ -19,7 +20,6 @@
     </header>
 
     <div class="vspacer" />
-
 
     <div class="mainContentContainer">
         <Router>
@@ -45,6 +45,10 @@
 
             <Route path="/products/*">
                 <Products />
+            </Route>
+
+            <Route path="/settings/*">
+                <Settings />
             </Route>
         </Router>
     </div>
@@ -97,7 +101,6 @@
     footer {
         background: var(--background-primary);
     }
-
 
     @media only screen and (min-width: 640px) {
         .vspacer {

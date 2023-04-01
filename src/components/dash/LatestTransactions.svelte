@@ -1,4 +1,6 @@
 <script>
+    import { formatDate } from "../../scripts/js/methods";
+
     export let latestTransactions = [];
 
     let pageSize = 30;
@@ -60,7 +62,7 @@
                                     </td>
 
                                     <td>
-                                        {tr.date}
+                                        {formatDate(tr.date)}
                                     </td>
 
                                     <td>

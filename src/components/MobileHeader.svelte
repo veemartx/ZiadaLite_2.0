@@ -4,6 +4,7 @@
     import { Confirm } from "notiflix/build/notiflix-confirm-aio";
     import TopSearch from "./TopSearch.svelte";
     import { getLiuDetails, logout } from "../scripts/js/methods";
+    import QuickApps from "./QuickApps.svelte";
 
     let liuDetails = getLiuDetails();
 
@@ -13,14 +14,21 @@
 
     let showSearch = false;
 
+    let showQuickApps = false;
+
     $: {
         hideNav($location);
         hideSearch($location);
+        hideQuickApps($location);
     }
 
     const hideNav = ($location) => {
         showNav = false;
+        return $location;
+    };
 
+    const hideQuickApps = ($location) => {
+        showQuickApps = false;
         return $location;
     };
 
@@ -36,6 +44,12 @@
 
     const toggleNav = () => {
         showNav = !showNav;
+        hideQuickApps($location);
+    };
+
+    const toggleQuickApps = () => {
+        showQuickApps = !showQuickApps;
+        hideNav($location);
     };
 
     const handleLogout = () => {
@@ -65,13 +79,25 @@
             </div>
             <div class="mobileActionsBar">
                 <div class="actionsPanel">
-                    <div class="icon-btn">
-                        <i class="ri-add-box-line" />
+                    <Link to="/">
+                        <div class="icon-btn">
+                            <i class="ri-home-line" />
+                        </div>
+                    </Link>
+
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <div
+                        on:click={toggleQuickApps}
+                        class={showQuickApps ? "icon-btn active" : "icon-btn"}
+                    >
+                        <i class="ri-layout-grid-fill" />
                     </div>
 
-                    <div class="icon-btn">
-                        <i class="ri-nurse-line" />
-                    </div>
+                    <Link to="/products/new">
+                        <div class="icon-btn">
+                            <i class="ri-add-box-line" />
+                        </div>
+                    </Link>
 
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <div
@@ -106,6 +132,12 @@
         {#if showSearch}
             <div class="mobileSearchBar">
                 <TopSearch />
+            </div>
+        {/if}
+
+        {#if showQuickApps}
+            <div class="mobileQuickAppsBar">
+                <QuickApps />
             </div>
         {/if}
 
@@ -191,6 +223,11 @@
         font-size: 12px;
     }
 
+    .mobileActionsBar {
+        margin-left: 1em;
+        margin-top: 1px;
+    }
+
     /* .nicon {
         
     } */
@@ -198,7 +235,12 @@
     .mobileSearchBar {
         border-top: 1px dotted rgb(3, 65, 42);
         background: rgba(108, 108, 108, 0.037);
-        /* padding-inline: 0.4em; */
+        padding: 0.4em;
+    }
+
+    .mobileQuickAppsBar {
+        border-top: 1px dotted rgb(3, 65, 42);
+        background: rgba(9, 33, 26, 0.822);
         padding: 0.4em;
     }
 

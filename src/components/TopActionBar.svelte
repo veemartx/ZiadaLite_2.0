@@ -1,6 +1,24 @@
 <script>
     import { onMount } from "svelte";
-    import { Link } from "svelte-navigator";
+    import { Link, useLocation } from "svelte-navigator";
+    import QuickApps from "./QuickApps.svelte";
+
+    const location = useLocation();
+
+    let showQuickApps = false;
+
+    $: {
+        hideQuickApps($location);
+    }
+
+    const hideQuickApps = ($location) => {
+        showQuickApps = false;
+        return $location;
+    };
+
+    const toggleQuickApps = () => {
+        showQuickApps = !showQuickApps;
+    };
 
     // handle theme change
     onMount(() => {});
@@ -8,26 +26,38 @@
 
 <main>
     <div class="wrapper">
-        <div class="actionIcons">
-            <div class="icon-btn">
-                <i class="ri-home-line" />
+        <div class="actionIconsContainer">
+            <div class="actionIcons">
+                <Link to="/">
+                    <div class="icon-btn">
+                        <i class="ri-home-line" />
+                    </div>
+                </Link>
+
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <div
+                    on:click={toggleQuickApps}
+                    class={showQuickApps ? "icon-btn active" : "icon-btn"}
+                >
+                    <i class="ri-layout-grid-fill" />
+                </div>
+
+                <Link to="/products/new">
+                    <div class="icon-btn">
+                        <i class="ri-add-box-line" />
+                    </div>
+                </Link>
+
+                <div class="icon-btn">
+                    <i class="ri-nurse-line" />
+                </div>
             </div>
 
-            <div class="icon-btn">
-                <i class="ri-layout-grid-fill" />
-
-                <!-- apps panel  -->
-                <div class="panelContainer" />
-                <!-- apps panel  -->
-            </div>
-
-            <div class="icon-btn">
-                <i class="ri-add-box-line" />
-            </div>
-
-            <div class="icon-btn">
-                <i class="ri-nurse-line" />
-            </div>
+            {#if showQuickApps}
+                <div class="quickAppsBar">
+                    <QuickApps />
+                </div>
+            {/if}
         </div>
     </div>
 </main>
@@ -38,23 +68,14 @@
         justify-content: flex-end;
     }
 
-    .panelContainer {
-        position: absolute;
-        border-radius: 4px;
-        text-align: left;
-        background: rgba(255, 0, 0, 0);
-        top: 3em;
-        padding-top: 1em;
-        display: none;
-        width: 15em;
-    }
-
     .icon-btn {
-        color: #f2f2f2;
-        /* padding-top: 5px; */
+        color: #f2f2f2c7;
     }
 
-    .icon-btn:hover .panelContainer {
-        display: block;
+    .quickAppsBar {
+        background: rgb(20, 78, 57);
+        padding: 0.4em;
+        position: absolute;
+        border-radius: 5px;
     }
 </style>

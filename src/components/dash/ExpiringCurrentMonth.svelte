@@ -1,7 +1,10 @@
 <script>
     import { onMount } from "svelte";
     import { Link } from "svelte-navigator";
-    import { currentAndPreviousMonths } from "../../scripts/js/methods";
+    import {
+        currentAndPreviousMonths,
+        formatDate,
+    } from "../../scripts/js/methods";
 
     export let expiringCurrentMonth = [];
 
@@ -26,8 +29,6 @@
             offset,
             offset + pageSize
         );
-
-        // console.log(currentPageProducts);
     }
 
     $: {
@@ -52,7 +53,7 @@
         <div class="content">
             <div class="contentTitleBar">
                 <div class="contentTitle">
-                    Expiring This Month ({currentMonth.slice(0,3)})
+                    Expiring This Month ({currentMonth.slice(0, 3)})
                 </div>
             </div>
             <div class="expiringCurrentMonthContainer">
@@ -98,7 +99,7 @@
                                     </td>
 
                                     <td>
-                                        {ecm.expiryDate}
+                                        {formatDate(ecm.expiryDate)}
                                     </td>
 
                                     <td>

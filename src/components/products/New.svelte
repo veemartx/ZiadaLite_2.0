@@ -1,7 +1,7 @@
 <script>
     // @ts-nocheck
     import { onMount } from "svelte";
-    import Breadcrumbs from "./Breadcrumbs.svelte";
+    import Breadcrumbs from "../Breadcrumbs.svelte";
     import { Notify, Report } from "notiflix";
     import { apiBaseUrl } from "../../config/config";
     import axios from "axios";
@@ -10,9 +10,21 @@
     import AdditionsIcon from "../../assets/icons/product-additions.png";
     import AuthToken from "../AuthToken.svelte";
     import { navigate } from "svelte-navigator";
-    import { getExpiryDateConstraints } from "../../scripts/js/methods";
+    import {
+        getExpiryDateConstraints,
+        getPermittedTokens,
+    } from "../../scripts/js/methods";
     import imageCompression from "browser-image-compression";
     import { fade } from "svelte/transition";
+
+    let authTokens = [];
+
+    const RESOURCE = "products";
+
+    const ACTION = "delete";
+
+    const AUTH_ERROR_MESSAGE =
+        "Permission Denied: Action Not Allowed For This User.Check Allowed Permissions On Your Profile For More Details";
 
     const imageCompressorOptions = {
         maxSizeMB: 1,
@@ -27,7 +39,7 @@
         ZL_LIU = JSON.parse(ZL_LIU);
     }
 
-    let showAuthTokenModal = true;
+    let showAuthTokenModal = false;
 
     let expiryDateMessage;
     // products to be passed to assisted additions
@@ -95,17 +107,22 @@
 
     let maxShortExpiryMonth;
 
+    let minDeadStockExpiryDate;
+
+    let maxShortExpiryDate;
+
     $: {
         if (productType) {
             if (productType == "Dead Stock") {
                 productsList = approvedDeadStockAdditions;
                 expiryDateMessage =
-                    "Earliest Allowed Expiry - Dead Stock " +
-                    minDeadStockExpiryMonth;
+                    "Earliest Allowed Expiry For Dead Stock Is " +
+                    minDeadStockExpiryDate;
             } else if (productType == "Short Exp") {
                 productsList = excelProductsList;
                 expiryDateMessage =
-                    "Latest Allowed Expiry - Short Exp " + maxShortExpiryMonth;
+                    "Latest Allowed Expiry For Short Exp Is " +
+                    maxShortExpiryDate;
             }
 
             showAssistedProductCreationModal = true;
@@ -332,7 +349,18 @@
         maxShortExpiryMonth = getExpiryDateConstraints().maxShortExpiryMonth;
         minDeadStockExpiryMonth =
             getExpiryDateConstraints().minDeadStockExpiryMonth;
+
+        maxShortExpiryDate = getExpiryDateConstraints().maxShortExpiryDate;
+        minDeadStockExpiryDate =
+            getExpiryDateConstraints().minDeadStockExpiryDate;
     });
+
+    // get allowed tokens
+    authTokens = getPermittedTokens(RESOURCE, ACTION);
+
+    // showAuthTokenModal = true;
+
+    // console.log(authTokens);
 </script>
 
 <main>
@@ -349,11 +377,10 @@
             >
                 <div class="mainContainer">
                     <div class="leftCol">
-                        <div class="segment">
+                        <div class="segmentContainer">
                             <div class="titlebar">
                                 <div class="title">Product Details</div>
                             </div>
-                            .
                             <br />
                             <div class="">
                                 <div class="field required">
@@ -404,7 +431,7 @@
                             </div>
                         </div>
 
-                        <div class="segment" style="margin-top: 1em;">
+                        <div class="segmentContainer" style="margin-top: 1em;">
                             <div class="titlebar ">
                                 <div class="title">Product Gallery</div>
 
@@ -540,7 +567,7 @@
                     </div>
 
                     <div class="rightCol">
-                        <div class="segment">
+                        <div class="segmentContainer">
                             <div class="titleBar">
                                 <div class="title">Expiry Details</div>
                             </div>
@@ -614,7 +641,7 @@
                             </div>
                         </div>
 
-                        <div class="segment" style="margin-top: 1em;">
+                        <div class="segmentContainer" style="margin-top: 1em;">
                             <div class="titlebar ">
                                 <div class="title">Extra Details</div>
                             </div>
@@ -679,7 +706,7 @@
                             </div>
                         </div>
 
-                        <div class="segment">
+                        <div class="segmentContainer">
                             <div
                                 class=""
                                 style="padding:1em;text-align:center;"
@@ -713,6 +740,8 @@
 {#if showAuthTokenModal}
     <AuthToken
         bind:authenticatedUser
+        payload={authTokens}
+        errorMessage={AUTH_ERROR_MESSAGE}
         on:success={authTokenSuccess}
         on:cancel={cancelAuthentication}
     />
@@ -749,6 +778,11 @@
     .rightCol {
         flex: 3;
         margin-top: 1em;
+    }
+
+    .segmentContainer {
+        background: #fff;
+        padding: 1em;
     }
 
     input {

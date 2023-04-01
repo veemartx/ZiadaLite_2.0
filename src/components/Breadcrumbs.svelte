@@ -35,7 +35,7 @@
     main {
         border-bottom: 1px dotted rgba(81, 81, 81, 0.284);
         margin-bottom: 0.5em;
-        margin-top: 0.5em;
+        margin-top: 1em;
 
         background: #fff;
     }
@@ -52,10 +52,20 @@
     }
 
     .title {
-        text-transform: uppercase;
+        text-transform: capitalize;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--background-primary);
     }
 
     @media only screen and (min-width: 640px) {
+        main {
+            border-bottom: 1px dotted rgba(81, 81, 81, 0.284);
+            margin-bottom: 0.5em;
+            margin-top: 0.5em;
+
+            background: #fff;
+        }
         .crumpsContainer {
             display: flex;
             justify-content: space-between;

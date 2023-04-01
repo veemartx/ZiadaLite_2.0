@@ -3,15 +3,14 @@
     import { createEventDispatcher, onMount } from "svelte";
     import { Notify } from "notiflix/build/notiflix-notify-aio";
 
-    let authTknsString = window.localStorage.ZLUSRTKNS;
-
-    // console.log(authTknsString);
-
-    let authTokens = [];
-
     let authenticatBtnLoading = false;
 
     export let authenticatedUser;
+
+    export let errorMessage;
+
+    // an array of tokens on which to authenticate against
+    export let payload = [];
 
     let one;
     let two;
@@ -32,14 +31,14 @@
     const handleCheckAuthToken = () => {
         let authToken = `${one}${two}${three}${four}`;
 
-        let authTokensArray = authTokens.map((e) => e.tkn);
+        let authTokensArray = payload.map((e) => e.t);
 
         authenticatBtnLoading = true;
 
         let index = authTokensArray.indexOf(authToken);
 
         if (index != -1) {
-            authenticatedUser = authTokens[index];
+            authenticatedUser = payload[index];
 
             handleSuccess();
 
@@ -53,9 +52,9 @@
 
             authenticatBtnLoading = false;
         } else {
-            Notify.failure("Authentication Failed", {
+            Notify.failure(errorMessage, {
                 ID: "MKA",
-                timeout: 1000,
+                timeout: 4000,
                 showOnlyTheLastOne: true,
                 cssAnimationStyle: "from-bottom",
                 zindex: 1000000000,
@@ -68,11 +67,7 @@
     };
 
     onMount(() => {
-        if (authTknsString != undefined) {
-            authTokens = JSON.parse(authTknsString);
-
-            // console.log(authTokens);
-        }
+        console.log(payload);
     });
 </script>
 

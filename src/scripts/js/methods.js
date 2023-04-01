@@ -1,6 +1,7 @@
 // @ts-nocheck
 import dayjs from "dayjs";
 import customParseFormat from 'dayjs/plugin/customParseFormat'
+import { navigate } from "svelte-navigator";
 dayjs.extend(customParseFormat)
 
 
@@ -167,13 +168,16 @@ export const currentAndPreviousMonths = () => {
 export const getExpiryDateConstraints = () => {
     let now = dayjs();
 
-    let ninthMonthFromNow = dayjs(now).add(9, 'months').endOf('month').format('YYYY-MM');
+    let ninthMonthFromNow = dayjs(now).add(9, 'months').format('YYYY-MM');
     let eighthMonthFromNow = dayjs(now).add(8, 'months').endOf('month').format('YYYY-MM');
 
 
     return {
         minDeadStockExpiryMonth: ninthMonthFromNow,
-        maxShortExpiryMonth: eighthMonthFromNow
+        minDeadStockExpiryDate: dayjs(ninthMonthFromNow + '-01').endOf('month').format('MMM DD, YYYY'),
+        maxShortExpiryMonth: eighthMonthFromNow,
+        maxShortExpiryDate: dayjs(eighthMonthFromNow + '-01').endOf('month').format('MMM DD, YYYY'),
+
     };
 }
 
@@ -239,4 +243,109 @@ export const getMinDeadStockExpiryDate = () => {
     let ninthMonthFromNow = dayjs(date).add(9, 'months')
 
     return ninthMonthFromNow;
+}
+
+export const formatDate = (d) => {
+
+    // if date includes time
+    if (d.length > 12) {
+        return dayjs(d).format('MMM DD, YYYY H:m:s');
+
+    } else {
+        return dayjs(d).format('MMM DD, YYYY');
+
+    }
+}
+
+
+// takes an object of the filters to apply
+// eg for delete products only admins, region, region-managers,Auditor
+// for now we allow only position constraints
+const filterPermittedTokens = (filter) => {
+    let authTokensString = window.localStorage.ZLUSRTKNS;
+
+    let authTokens = [];
+
+    if (authTokensString) {
+        let allTokens = JSON.parse(authTokensString);
+
+        // allowed positions
+        let allowedPositions = filter.pos.allowed;
+
+        // if all
+        if (allowedPositions[0] == 'all') {
+            authTokens = allTokens;
+        } else {
+
+            // token structure
+            // {"u":"wertyuisjlcgk","t":"6795","p":"admin","d":"Technical Support"}
+            let allowedTokens = allTokens.at.filter((t) => {
+
+                if (allowedPositions.includes(t.p)) {
+                    return t;
+                }
+            })
+
+            authTokens = allowedTokens;
+        }
+    }
+
+    return authTokens;
+}
+
+
+export const getPermittedTokens = (resource, action) => {
+
+    let tokens;
+
+    // resources
+    let filter = {};
+
+    // rules
+    switch (resource) {
+        case 'products':
+            // check the actions
+            if (action == 'delete') {
+                filter = {
+                    pos: {
+                        allowed: ['admin', 'auditor']
+                    },
+                }
+
+                tokens = filterPermittedTokens(filter);
+            } else {
+
+                filter = {
+                    pos: {
+                        allowed: ['admin', 'manager', 'region-manager', 'auditor']
+                    },
+                }
+
+                tokens = filterPermittedTokens(filter);
+            }
+
+            break;
+
+        default:
+
+            filter = {
+                pos: {
+                    allowed: ['all']
+                },
+            }
+
+            tokens = filterPermittedTokens(filter);
+
+            break;
+    }
+
+
+    return tokens;
+
+}
+
+
+
+export const goBack = () => {
+    navigate(-1);
 }

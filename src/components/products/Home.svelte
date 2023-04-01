@@ -3,6 +3,21 @@
     import { onMount } from "svelte";
     import { Link } from "svelte-navigator";
     import { apiBaseUrl } from "../../config/config";
+    import Breadcrumbs from "../Breadcrumbs.svelte";
+
+    let crumbs = {
+        title: "Products",
+        crumbs: [
+            {
+                name: "Home",
+                url: "/",
+            },
+            {
+                name: "Products",
+                url: "/products/",
+            },
+        ],
+    };
 
     let products = [];
 
@@ -88,6 +103,10 @@
 <main>
     <div class="wrapper">
         <div class="content">
+            <div class="breadcrumbs">
+                <Breadcrumbs {crumbs} />
+            </div>
+
             <div class="productsMainContainer">
                 <div class="firstLettersCol">
                     {#each firstLetters as fl}

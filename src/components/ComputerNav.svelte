@@ -9,12 +9,6 @@
     <div class="wrapper">
         <div class="content">
             <div class="compNav">
-                <Link to="/products/new">
-                    <div class="nav">
-                        <i class="ri-home-line" /> &nbsp; New &nbsp;
-                    </div>
-                </Link>
-
                 <Link to="/dash">
                     <div class="nav">
                         <i class="ri-home-line" /> &nbsp; Home &nbsp;
