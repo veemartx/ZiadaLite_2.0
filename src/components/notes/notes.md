@@ -61,3 +61,56 @@ These are allowed actions on systems resources
 - confirmationType  
     1. host-> "can only be confirmed by a person from the same branch".
     2. global -> Can be confirmed by anyone allowed in the system
+
+## Product Types
+
+These are types allowed in the system
+
+- id
+- name //eg Dead Stock
+- description // Description of the type
+- status -> to control whether new products of this can be added or not
+
+## Settings
+
+- id
+- name
+- value
+- resource
+- lastUpdated
+
+Sample Settings
+  Descriptors - All,None
+
+- productAdditionDates  1-10
+- hqProductAdditionDates All
+
+- shortExpMaxAge 8months // time to expiry
+- deadStockMinAge 8months // time in pharmacore
+
+- specialBonusPaymentValue 7%
+- deadStockBonusPaymentValue 10%
+- shortExpBonusPaymentValue 5%
+
+  //when the target starts to calculate
+- branchMonthlySalesTargetStartDate 16
+- branchMonthlySalesTargetEndDate 15
+- branchMonthlySaleDefaultTarget 40000
+
+- userMonthlySalesDefaultTarget  16000
+- userMonthlySalesTargetPercentageCutoff 20 // the cutoff percentile for the best and the worst
+  
+- monthlyPerformanceReportsSendingDate  3   // date on when to send performance reports
+- productAdditionReportSendingDate   11  // date on when to send product addition reports
+
+- dateDisplayFormat MM DD, YYYY H:m:s
+- numbersDisplayFormat compact,standard
+
+- displayFontSize small,medium,large
+
+## Major Task Dexie Js. Hold for now
+
+## To Set Mobile
+
+1. Update  Access-Control-Allow-Origin in htaccess
+2. Update apiBase Url

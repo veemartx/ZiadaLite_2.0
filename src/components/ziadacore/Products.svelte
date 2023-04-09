@@ -1,23 +1,31 @@
 <script>
-    import axios from "axios";
     import { onMount } from "svelte";
     import { Link } from "svelte-navigator";
+    import { addCommas, goBack } from "../../scripts/js/methods";
+    import axios from "axios";
     import { apiBaseUrl } from "../../config/config";
-    import Breadcrumbs from "../Breadcrumbs.svelte";
 
-    let crumbs = {
-        title: "Products",
-        crumbs: [
-            {
-                name: "Home",
-                url: "/",
-            },
-            {
-                name: "Products",
-                url: "/products/",
-            },
-        ],
-    };
+    export let crumbs;
+
+    onMount(() => {
+        crumbs = {
+            title: "Core Products",
+            crumbs: [
+                {
+                    name: "Home",
+                    url: "/",
+                },
+                {
+                    name: "ZiadaCore",
+                    url: "/ziada-core",
+                },
+                {
+                    name: "Products",
+                    url: "/ziada-core/products",
+                },
+            ],
+        };
+    });
 
     let products = [];
 
@@ -50,7 +58,7 @@
             const response = await axios({
                 method: "POST",
                 data: dt,
-                url: `${apiBaseUrl}getProducts.php`,
+                url: `${apiBaseUrl}core/getInventory.php`,
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
@@ -72,6 +80,8 @@
 
             products = res[1];
 
+            console.log(products);
+
             // console.log(res);
         } catch (err) {
             console.log(err);
@@ -82,7 +92,7 @@
         try {
             let response = await axios({
                 method: "GET",
-                url: `${apiBaseUrl}getFirstLetters.php`,
+                url: `${apiBaseUrl}core/getFirstLetters.php`,
             });
 
             let res = response.data;
@@ -103,11 +113,31 @@
 <main>
     <div class="wrapper">
         <div class="content">
-            <div class="breadcrumbs">
-                <Breadcrumbs {crumbs} />
+            <div class="titleBar">
+                <div class="titleCol">
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <div
+                        class="backCol"
+                        on:click={() => {
+                            goBack();
+                        }}
+                    >
+                        <div class="" style="padding-right:2px">
+                            <i class="arrow left icon" />
+                        </div>
+                        <div class="">Back</div>
+                    </div>
+
+                    <div class="s-title">
+                        <i class="cog icon" /> Products
+                    </div>
+                </div>
+                <div class="actions">
+                    <i class="ri-more-2-fill" />
+                </div>
             </div>
 
-            <div class="productsMainContainer">
+            <div class="mainContainer">
                 <div class="firstLettersCol">
                     {#each firstLetters as fl}
                         <button
@@ -126,9 +156,10 @@
                     {/each}
                 </div>
 
-                <div class="productsTableCol">
+                <br />
+                <div class="tableContainer">
                     <table
-                        class="ui unstackable striped single line very basic table"
+                        class="ui very basic striped single line unstackable table"
                     >
                         <thead>
                             <tr>
@@ -136,42 +167,32 @@
                                 <th>Name</th>
                                 <th>Code</th>
                                 <th>Branch</th>
-                                <th>Expiry</th>
-                                <th>Qty</th>
-                                <th>Req'sted </th>
-                                <th>Checks </th>
-                                <th>View</th>
+                                <th>InStockQty</th>
+                                <th>AverageCost</th>
+                                <th>PackSize</th>
+                                <th>Qty(WP)</th>
+                                <th>Value</th>
                             </tr>
                         </thead>
-
-                        <tbody class="productsList">
-                            {#each products as pd, i}
+                        <tbody>
+                            {#each products as p, i}
                                 <tr>
                                     <td>{i + 1}</td>
-                                    <td>{pd.name}</td>
-                                    <td>{pd.code}</td>
-                                    <td>{pd.branch}</td>
-                                    <td>{pd.expiry}</td>
-                                    <td>{pd.qty}</td>
-                                    <td
-                                        style={pd.requested == "Y"
-                                            ? "color:green"
-                                            : "color:red"}
-                                        ><b>{pd.requested}</b></td
-                                    >
-                                    <td>{pd.checks}</td>
-                                    <td>
-                                        <div class="actions">
-                                            <Link to={`/product/pd/${pd.id}`}>
-                                                <i class="eye icon" /> View
-                                            </Link>
-                                        </div>
-                                    </td>
+                                    <td>{p.name}</td>
+                                    <td>{p.code}</td>
+                                    <td>{p.branch}</td>
+                                    <td>{p.instockqty}</td>
+                                    <td>{p.averageCost}</td>
+                                    <td>{p.packSize}</td>
+                                    <td>{p.calcPw}</td>
+                                    <td>{addCommas(p.value, 2)}</td>
                                 </tr>
                             {/each}
                         </tbody>
                     </table>
                 </div>
+
+                <br />
 
                 <div class="pagesCol">
                     {#each pages as pg}
@@ -193,27 +214,38 @@
 </main>
 
 <style>
-    main {
-        margin-top: 1em;
-        margin-bottom: 2em;
+    .titleBar {
+        padding: 0.5em;
+        border-bottom: 1px solid rgba(166, 166, 166, 0.429);
     }
-    .productsTableCol {
-        overflow-x: auto;
-        margin-top: 0.5em;
+    .backCol {
+        font-size: larger;
+        color: crimson;
+        font-weight: 600;
+        display: flex;
+        cursor: pointer;
     }
 
-    table {
-        font-size: smaller !important;
+    .titleCol {
+        display: flex;
+        justify-content: space-between;
     }
 
-    .productsMainContainer {
+    .s-title {
+        font-size: larger;
+        margin-left: 1em;
+        font-weight: 500;
+        color: var(--background-secondary);
+    }
+
+    .mainContainer {
         padding: 1em;
-        background: #fff;
+        overflow-x: auto;
+        max-width: 100vw;
     }
 
-    .firstLettersCol {
-        border-bottom: 1px solid rgba(128, 128, 128, 0.485);
-        padding-bottom: 1em;
+    .content {
+        max-width: 100vw;
     }
 
     .pagesCol {

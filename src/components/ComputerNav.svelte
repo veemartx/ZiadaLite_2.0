@@ -71,6 +71,13 @@
                         <i class="ri-delete-bin-line" /> &nbsp; Trash &nbsp;
                     </div>
                 </Link>
+
+                <Link to="/ziada-core">
+                    <div class="nav">
+                        <i class="ri-luggage-deposit-line" />&nbsp; ZiadaCore
+                        <sup>&trade;</sup> &nbsp;
+                    </div>
+                </Link>
             </div>
         </div>
     </div>

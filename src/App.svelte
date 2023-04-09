@@ -1,11 +1,18 @@
 <script>
+  // @ts-nocheck
+
   import { onMount } from "svelte";
   import { Router, Route } from "svelte-navigator";
   import Footer from "./components/Footer.svelte";
   import Home from "./routes/Home.svelte";
   import Login from "./routes/Login.svelte";
   import { getLiu } from "./scripts/js/methods";
-  import { decode } from "js-base64";
+  import { Dexie, liveQuery } from "dexie";
+  import { db } from "./db/db";
+  import { apiBaseUrl } from "./config/config";
+  import axios from "axios";
+
+
 
   let liu;
 
@@ -14,8 +21,6 @@
 
     if (zliu) {
       liu = zliu;
-
-      console.log(liu);
     }
   };
 
@@ -31,10 +36,8 @@
     {:else}
       <Login />
     {/if}
-
   </Router>
 </main>
 
 <style>
-
 </style>

@@ -4,7 +4,10 @@
     import { onMount } from "svelte";
     import ZiadaLogo from "../assets/icons/favicon.png";
     import Footer from "../components/Footer.svelte";
+    import ZiadaLiteInitModal from "../components/ZiadaLiteInitModal.svelte";
     import { apiBaseUrl } from "../config/config";
+
+    let showSystemInitModal = false;
 
     // set credentials to true so as to accept the cookies
     axios.defaults.withCredentials = true;
@@ -41,7 +44,11 @@
 
                 window.localStorage.ZL_LIU = JSON.stringify(res.user);
 
-                window.location.reload();
+                // set the init details
+
+                showSystemInitModal = true;
+
+                // window.location.reload();
             } else {
                 Notify.failure("Incorrect Username or Password");
             }
@@ -137,6 +144,12 @@
     </footer>
 </main>
 
+<!-- modals -->
+{#if showSystemInitModal}
+    <ZiadaLiteInitModal />
+{/if}
+
+<!-- modals -->
 <style>
     main {
         background: rgb(28, 1, 44);

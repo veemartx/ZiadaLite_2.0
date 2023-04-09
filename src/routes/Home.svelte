@@ -5,11 +5,14 @@
     import Footer from "../components/Footer.svelte";
     import Header from "../components/Header.svelte";
     import Sidebar from "../components/Sidebar.svelte";
+    import Product from "./Product.svelte";
     import Products from "./Products.svelte";
     import Reports from "./Reports.svelte";
     import Settings from "./Settings.svelte";
     import Transfers from "./Transfers.svelte";
     import Trash from "./Trash.svelte";
+    import Users from "./Users.svelte";
+    import ZiadaCore from "./ZiadaCore.svelte";
 
     let showSidebarModal = false;
 </script>
@@ -49,6 +52,18 @@
 
             <Route path="/settings/*">
                 <Settings />
+            </Route>
+
+            <Route path="/users/*">
+                <Users />
+            </Route>
+
+            <Route path="/product/*">
+                <Product />
+            </Route>
+
+            <Route path="/ziada-core/*">
+                <ZiadaCore />
             </Route>
         </Router>
     </div>

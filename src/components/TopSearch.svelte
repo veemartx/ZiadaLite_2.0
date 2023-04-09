@@ -1,7 +1,9 @@
 <script>
     import axios from "axios";
-    import { Link } from "svelte-navigator";
+    import { Link, useLocation } from "svelte-navigator";
     import { apiBaseUrl } from "../config/config";
+
+    const location = useLocation();
 
     // set credentials to true so as to accept the cookies
     axios.defaults.withCredentials = true;
@@ -14,6 +16,14 @@
 
     let searchLoading = false;
 
+    $: {
+        // console.log($location);
+        hideSearchResults($location);
+    }
+
+    const hideSearchResults = (l) => {
+        showSearchResults = false;
+    };
     $: {
         if (q.length > 2) {
             handleSearch();
@@ -80,7 +90,7 @@
 
                     <div class="resultsContent">
                         {#each results as rs}
-                            <Link to={`/product/p/${rs.id}`}>
+                            <Link to={`/product/pd/${rs.id}`}>
                                 <div class="rsCol">
                                     <div class="rsName">{rs.name}</div>
                                     <div class="rsBranch">{rs.branch}</div>

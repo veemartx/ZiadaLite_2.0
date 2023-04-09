@@ -31,7 +31,7 @@
     const handleCheckAuthToken = () => {
         let authToken = `${one}${two}${three}${four}`;
 
-        let authTokensArray = payload.map((e) => e.t);
+        let authTokensArray = payload.map((e) => e.token);
 
         authenticatBtnLoading = true;
 

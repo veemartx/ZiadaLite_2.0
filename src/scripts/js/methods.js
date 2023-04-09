@@ -2,6 +2,11 @@
 import dayjs from "dayjs";
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { navigate } from "svelte-navigator";
+
+
+
+
+
 dayjs.extend(customParseFormat)
 
 
@@ -76,6 +81,10 @@ export const logout = async (userId) => {
 
 
     window.localStorage.removeItem('ZL_LIU');
+    window.localStorage.removeItem('ZLUSRTKNS');
+    window.localStorage.removeItem('ZLSTNGS');
+    window.localStorage.removeItem('ZLPMS');
+
 
     window.location.reload();
 }
@@ -294,53 +303,46 @@ const filterPermittedTokens = (filter) => {
 }
 
 
-export const getPermittedTokens = (resource, action) => {
+export const getPermittedTokens = (resource, action, users, permissions) => {
 
-    let tokens;
+    // console.log(users);
+    // an array of allowed positions
+    let allowed;
 
-    // resources
-    let filter = {};
+    console.log(permissions);
 
-    // rules
-    switch (resource) {
-        case 'products':
-            // check the actions
-            if (action == 'delete') {
-                filter = {
-                    pos: {
-                        allowed: ['admin', 'auditor']
-                    },
-                }
+    // filter the array for resource
+    let filteredResourceArray = permissions.filter((p) => {
+        if (p.resource == resource) {
+            // chech the action here,
+            if (action == p.action) {
+                return p;
 
-                tokens = filterPermittedTokens(filter);
-            } else {
-
-                filter = {
-                    pos: {
-                        allowed: ['admin', 'manager', 'region-manager', 'auditor']
-                    },
-                }
-
-                tokens = filterPermittedTokens(filter);
             }
 
-            break;
+        }
+    })
 
-        default:
+    // remember to  add this to settings
+    let defaultAllowed = ['admin'];
 
-            filter = {
-                pos: {
-                    allowed: ['all']
-                },
-            }
-
-            tokens = filterPermittedTokens(filter);
-
-            break;
+    if (filteredResourceArray.length < 1) {
+        allowed = defaultAllowed;
+    } else {
+        allowed = filteredResourceArray[0].allowed;
     }
 
+    // filter the users
+    let filteredAllowedTokensArray = users.filter((u) => {
 
-    return tokens;
+        if (allowed.includes(u.position)) {
+            return u;
+        }
+    })
+
+    console.log(filteredAllowedTokensArray);
+
+    return filteredAllowedTokensArray;
 
 }
 

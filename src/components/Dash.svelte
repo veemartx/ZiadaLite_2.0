@@ -20,21 +20,7 @@
     //     $loading = [...$loading, LOADING_OBJ];
     // };
 
-    const getInitDetails = async () => {
-        try {
-            let response = await axios.get(`${apiBaseUrl}getInitDetails.php`);
-
-            let result = response.data;
-
-            // console.log(result);
-
-            window.localStorage.ZLUSRTKNS = JSON.stringify(result);
-        } catch (err) {
-            console.log(err);
-        }
-    };
     onMount(() => {
-        getInitDetails();
     });
 </script>
 

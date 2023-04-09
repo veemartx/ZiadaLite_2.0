@@ -5,7 +5,6 @@
     import { fly } from "svelte/transition";
     import { Confirm } from "notiflix";
 
-    let deviceDetails = JSON.parse(window.localStorage.pcims_device_tkn);
 
     // send message to close modal
     const dispatch = createEventDispatcher();
@@ -13,21 +12,6 @@
     function closeModal() {
         dispatch("close");
     }
-
-    const handleDeviceReset = () => {
-        Confirm.show(
-            `Device Reset`,
-            `Reset Device ${deviceDetails.deviceCode}? You Might be logged out`,
-            `Ok`,
-            `Cancel`,
-            () => {
-                // handle device reset
-                window.localStorage.removeItem("pcims_device_tkn");
-
-                window.location.reload();
-            }
-        );
-    };
 
     onMount(() => {
         // change body attributes

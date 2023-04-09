@@ -16,8 +16,14 @@
     } from "../../scripts/js/methods";
     import imageCompression from "browser-image-compression";
     import { fade } from "svelte/transition";
+    import { liveQuery } from "dexie";
+    import { db } from "../../db/db";
 
     let authTokens = [];
+
+    let localDbStoreUsers = liveQuery(() => db.users.toArray());
+
+    let localDbStorePermissions = liveQuery(() => db.permissions.toArray());
 
     const RESOURCE = "products";
 
@@ -129,6 +135,17 @@
         }
     }
 
+    $: {
+        if ($localDbStoreUsers && $localDbStorePermissions) {
+            // get allowed tokens
+            authTokens = getPermittedTokens(
+                RESOURCE,
+                ACTION,
+                $localDbStoreUsers,
+                $localDbStorePermissions
+            );
+        }
+    }
     const authTokenSuccess = () => {
         showAuthTokenModal = false;
 
@@ -355,10 +372,7 @@
             getExpiryDateConstraints().minDeadStockExpiryDate;
     });
 
-    // get allowed tokens
-    authTokens = getPermittedTokens(RESOURCE, ACTION);
-
-    // showAuthTokenModal = true;
+    showAuthTokenModal = true;
 
     // console.log(authTokens);
 </script>

@@ -93,12 +93,6 @@
                         <i class="ri-layout-grid-fill" />
                     </div>
 
-                    <Link to="/products/new">
-                        <div class="icon-btn">
-                            <i class="ri-add-box-line" />
-                        </div>
-                    </Link>
-
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <div
                         on:click={toggleSearch}
@@ -188,6 +182,10 @@
 
                 <Link to="/trash">
                     <div class="nav">- Trash</div>
+                </Link>
+
+                <Link to="/ziada-core">
+                    <div class="nav">- ZiadaCore <sup>&trade;</sup></div>
                 </Link>
 
                 <div class="nav" style="height: 2em;" />
