@@ -309,7 +309,7 @@ export const getPermittedTokens = (resource, action, users, permissions) => {
     // an array of allowed positions
     let allowed;
 
-    console.log(permissions);
+    // console.log(permissions);
 
     // filter the array for resource
     let filteredResourceArray = permissions.filter((p) => {
@@ -347,7 +347,21 @@ export const getPermittedTokens = (resource, action, users, permissions) => {
 }
 
 
-
 export const goBack = () => {
     navigate(-1);
+}
+
+
+// gets a month year eg (02-2023)
+export const getFirstAndLastDatesOfAMonth = (month) => {
+
+    month = month + '-01';
+
+    console.log(month);
+
+    return {
+        first: dayjs(month).startOf('month').format('YYYY-MM-DD'),
+        last: dayjs(month).endOf('month').format('YYYY-MM-DD')
+    }
+
 }

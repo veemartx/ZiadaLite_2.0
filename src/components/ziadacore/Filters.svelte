@@ -1,4 +1,6 @@
 <script>
+    // @ts-nocheck
+
     import { onMount } from "svelte";
     import { Link } from "svelte-navigator";
     import { addCommas, goBack } from "../../scripts/js/methods";
@@ -11,13 +13,52 @@
 
     let printBaseUrl = "https://v2.pharmaplusziadalite.co.ke/";
 
+    let filterBranches = [];
+
+    let currentlyFilteredBranch = "All";
+
     export let crumbs;
 
     let totalValue = 0;
 
-    let daysNotSold = 30;
+    let daysNotSold = 60;
 
+    // all products
     let products = [];
+
+    // Filtered products
+    let filteredProducts = [];
+
+    // if currently filtered branch= All , filtered products = all products
+    $: {
+        // update bra
+        if (products.length > 1) {
+            handleBranchFilter(currentlyFilteredBranch);
+        }
+    }
+
+    const handleBranchFilter = (currentlyFilteredBranch) => {
+        if (currentlyFilteredBranch == "All") {
+            filteredProducts = products;
+        } else {
+            // filter the branch
+            let filteredBranchProducts = products.filter((p) => {
+                if (p.branch == currentlyFilteredBranch) {
+                    return p;
+                }
+            });
+
+            filteredProducts = filteredBranchProducts;
+        }
+
+        totalValue = filteredProducts
+            .map((v) => v.value)
+            .reduce((partialSum, a) => partialSum + a, 0);
+
+        pages = [];
+
+        currentPage = 1;
+    };
 
     let currentPage = 1;
 
@@ -34,13 +75,13 @@
     $: {
         offset = (currentPage - 1) * pageSize;
 
-        currentPageProducts = products.slice(offset, offset + pageSize);
+        currentPageProducts = filteredProducts.slice(offset, offset + pageSize);
     }
 
     // make pages
     $: {
         if (products.length > 0) {
-            totalNumberOfPages = products.length / pageSize + 1;
+            totalNumberOfPages = filteredProducts.length / pageSize + 1;
 
             for (let x = 1; x <= totalNumberOfPages; x++) {
                 pages.push(x);
@@ -72,14 +113,31 @@
             const res = response.data;
 
             products = res;
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
-            totalValue = products
-                .map((v) => v.value)
-                .reduce((partialSum, a) => partialSum + a, 0);
+    const getFilterBranches = async () => {
+        let dt = {
+            consumer: "notSoldIn",
+        };
 
-            pages = [];
+        try {
+            const response = await axios({
+                method: "POST",
+                data: dt,
+                url: `${apiBaseUrl}core/getFilterBranches.php`,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            });
 
-            currentPage = 1;
+            const res = response.data;
+
+            filterBranches = res;
+
+            console.log(res);
         } catch (err) {
             console.log(err);
         }
@@ -112,6 +170,8 @@
                 },
             ],
         };
+
+        getFilterBranches();
     });
 </script>
 
@@ -144,24 +204,47 @@
 
             <div class="mainContainer">
                 <div class="filtersContainer">
-                    <form>
-                        <div class="field">
-                            <label for="timeNotSold"
-                                >Select Time Product Not Sold</label
-                            >
-                            <select
-                                name="timeNotSold"
-                                id="timeNotSold"
-                                bind:value={daysNotSold}
-                            >
-                                <option value="30">Select Time Not Sold</option>
-                                <option value="60">2 Months</option>
-                                <option value="90">3 Months</option>
-                            </select>
+                    <form class="ui form">
+                        <div class="two fields">
+                            <div class="field">
+                                <label for="timeNotSold"
+                                    >Select Time Product Not Sold</label
+                                >
+                                <select
+                                    name="timeNotSold"
+                                    id="timeNotSold"
+                                    on:change={(e) => {
+                                        daysNotSold = e.target.value;
+                                    }}
+                                >
+                                    <option value="30"
+                                        >Select Time Not Sold</option
+                                    >
+                                    <option value="30">1 Month</option>
+                                    <option value="60">2 Months</option>
+                                    <option value="90">3 Months</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="filterBranch">Filter Branch</label>
+                                <select
+                                    name="filterBranch"
+                                    id="filterBranch"
+                                    bind:value={currentlyFilteredBranch}
+                                >
+                                    <option value="All">Select Branch</option>
+                                    <option value="All">All</option>
+                                    {#each filterBranches as fp}
+                                        <option value={fp}>{fp}</option>
+                                    {/each}
+                                </select>
+                            </div>
                         </div>
                     </form>
                 </div>
 
+                <br />
                 <div
                     class="titleBar"
                     style="padding-top:1em;display flex;justify-content:space-between"
@@ -284,5 +367,9 @@
 
     .pagesCol {
         margin-bottom: 2em;
+    }
+
+    select {
+        line-height: 3em !important;
     }
 </style>

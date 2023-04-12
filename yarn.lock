@@ -141,6 +141,18 @@ apexcharts@^3.19.2:
     svg.resize.js "^1.4.3"
     svg.select.js "^3.0.1"
 
+apexcharts@^3.37.3:
+  version "3.37.3"
+  resolved "https://registry.yarnpkg.com/apexcharts/-/apexcharts-3.37.3.tgz#7a448bd4de0a3a2c348c5f57e116c24734d6ba7c"
+  integrity sha512-+rnUui9uC3Mvh9qbQxUfqBnuJ0nAJOYTp+yKnA5bVmmndKXj5X/Q+OVIxkq0Jr5ysiK200Dsg1Tuz/OUG+DEpw==
+  dependencies:
+    svg.draggable.js "^2.2.2"
+    svg.easing.js "^2.0.0"
+    svg.filter.js "^2.0.2"
+    svg.pathmorphing.js "^0.1.3"
+    svg.resize.js "^1.4.3"
+    svg.select.js "^3.0.1"
+
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"

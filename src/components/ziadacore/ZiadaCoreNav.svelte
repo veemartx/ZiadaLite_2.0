@@ -45,6 +45,15 @@
                 </div>
             </Link>
 
+            <Link to="/ziada-core/performance">
+                <div class="navCol">
+                    <div class="navIcon">
+                        <i class="ri-bar-chart-grouped-line" />
+                    </div>
+                    <div class="navText">Performance</div>
+                </div>
+            </Link>
+
             <Link to="/ziada-core/">
                 <div class="navCol">
                     <div class="navIcon">

@@ -7,6 +7,7 @@
     import Products from "./Products.svelte";
     import Sales from "./Sales.svelte";
     import Filters from "./Filters.svelte";
+    import Performance from "./Performance.svelte";
 
     let crumbs = {
         title: "Settings",
@@ -56,6 +57,10 @@
 
                             <Route path="/filters/*">
                                 <Filters bind:crumbs />
+                            </Route>
+
+                            <Route path="/performance/*">
+                                <Performance bind:crumbs />
                             </Route>
                         </Router>
                     </div>
