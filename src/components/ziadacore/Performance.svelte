@@ -2,12 +2,13 @@
     // @ts-nocheck
 
     import { onMount } from "svelte";
-    import { Link } from "svelte-navigator";
+    import { Link, Route, Router } from "svelte-navigator";
     import { addCommas, goBack } from "../../scripts/js/methods";
     import axios from "axios";
     import { apiBaseUrl } from "../../config/config";
-    import PerformanceMainFilter from "./PerformanceMainFilter.svelte";
     import BranchPerformance from "./BranchPerformance.svelte";
+    import BranchesPerformance from "./BranchesPerformance.svelte";
+    import UserPerformance from "./UserPerformance.svelte";
 
     export let crumbs;
 
@@ -62,18 +63,21 @@
                 </div>
                 <!-- mainTitle  -->
 
-                <div class="branchPerformance">
-                    <BranchPerformance />
-                </div>
+                <div class="contentContainer">
+                    <Router>
+                        <Route path="/">
+                            <BranchesPerformance />
+                        </Route>
 
-                <br /> <br />
-                <div class="h-spacer" />
+                        <Route path="/br/*">
+                            <BranchPerformance />
+                        </Route>
 
-                <!-- main filter  -->
-                <div class="">
-                    <PerformanceMainFilter />
+                        <Route path="/user/*">
+                            <UserPerformance />
+                        </Route>
+                    </Router>
                 </div>
-                <!-- main filter  -->
             </div>
         </div>
     </div>
@@ -103,11 +107,6 @@
         margin-left: 1em;
         font-weight: 500;
         color: var(--background-secondary);
-    }
-
-    .h-spacer {
-        background: #f3f3f9;
-        min-height: 1em;
     }
 
     .mainContainer {
