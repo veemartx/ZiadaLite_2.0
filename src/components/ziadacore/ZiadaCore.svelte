@@ -6,7 +6,6 @@
     import ZiadaCoreHome from "./ZiadaCoreHome.svelte";
     import Products from "./Products.svelte";
     import Sales from "./Sales.svelte";
-    import Filters from "./Filters.svelte";
     import Performance from "./Performance.svelte";
 
     let crumbs = {
@@ -53,10 +52,6 @@
 
                             <Route path="/sales/*">
                                 <Sales bind:crumbs />
-                            </Route>
-
-                            <Route path="/filters/*">
-                                <Filters bind:crumbs />
                             </Route>
 
                             <Route path="/performance/*">

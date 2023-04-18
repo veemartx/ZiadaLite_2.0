@@ -1,9 +1,14 @@
 <script>
     import { onMount } from "svelte";
-    import { Link } from "svelte-navigator";
+    import { Link, Route, Router } from "svelte-navigator";
     import { addCommas, goBack } from "../../scripts/js/methods";
     import axios from "axios";
     import { apiBaseUrl } from "../../config/config";
+    import CoreSubNav from "./CoreSubNav.svelte";
+    import NotSold from "./NotSold.svelte";
+    import Home from "./products/Home.svelte";
+    import BranchProducts from "./products/BranchProducts.svelte";
+    import MissingProducts from "./products/MissingProducts.svelte";
 
     export let crumbs;
 
@@ -40,6 +45,27 @@
     let sort = "";
 
     let pages = [];
+
+    let coreNav = [
+        {
+            name: "Home",
+            url: "/ziada-core/products/",
+            entityName: "products",
+            icon: "home icon",
+        },
+        {
+            name: "Missing",
+            url: "/ziada-core/products/missing",
+            entityName: "missing",
+            icon: "x icon",
+        },
+        {
+            name: "Not Sold",
+            url: "/ziada-core/products/not-sold",
+            entityName: "not-sold",
+            icon: "square icon",
+        },
+    ];
 
     $: {
         // console.log(firsLetter);
@@ -137,77 +163,28 @@
                 </div>
             </div>
 
+            <div class="coreNavBar">
+                <CoreSubNav bind:coreNav />
+            </div>
+
             <div class="mainContainer">
-                <div class="firstLettersCol">
-                    {#each firstLetters as fl}
-                        <button
-                            on:click={() => {
-                                // reset page
-                                page = 1;
+                <Router>
+                    <Route path="/">
+                        <Home bind:crumbs />
+                    </Route>
 
-                                firsLetter = fl;
-                            }}
-                            class={firsLetter == fl
-                                ? "ui green  mini icon button"
-                                : "ui basic mini icon button"}
-                        >
-                            {fl}
-                        </button>
-                    {/each}
-                </div>
+                    <Route path="/not-sold/*">
+                        <NotSold bind:crumbs />
+                    </Route>
 
-                <br />
-                <div class="tableContainer">
-                    <table
-                        class="ui very basic striped single line unstackable table"
-                    >
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Name</th>
-                                <th>Code</th>
-                                <th>Branch</th>
-                                <th>InStockQty</th>
-                                <th>AverageCost</th>
-                                <th>PackSize</th>
-                                <th>Qty(WP)</th>
-                                <th>Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {#each products as p, i}
-                                <tr>
-                                    <td>{i + 1}</td>
-                                    <td>{p.name}</td>
-                                    <td>{p.code}</td>
-                                    <td>{p.branch}</td>
-                                    <td>{p.instockqty}</td>
-                                    <td>{p.averageCost}</td>
-                                    <td>{p.packSize}</td>
-                                    <td>{p.calcPw}</td>
-                                    <td>{addCommas(p.value, 2)}</td>
-                                </tr>
-                            {/each}
-                        </tbody>
-                    </table>
-                </div>
+                    <Route path="/missing/*">
+                        <MissingProducts />
+                    </Route>
 
-                <br />
-
-                <div class="pagesCol">
-                    {#each pages as pg}
-                        <button
-                            on:click={() => {
-                                page = pg;
-                            }}
-                            class={page == pg
-                                ? "ui green  mini icon button"
-                                : "ui basic mini icon button"}
-                        >
-                            {pg}
-                        </button>
-                    {/each}
-                </div>
+                    <Route path="/br/*">
+                        <BranchProducts bind:crumbs />
+                    </Route>
+                </Router>
             </div>
         </div>
     </div>
@@ -239,17 +216,11 @@
     }
 
     .mainContainer {
-        padding: 1em;
         overflow-x: auto;
         max-width: 100vw;
     }
 
     .content {
         max-width: 100vw;
-    }
-
-    .pagesCol {
-        margin-top: 2em;
-        margin-bottom: 2em;
     }
 </style>

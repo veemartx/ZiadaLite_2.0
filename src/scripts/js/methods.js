@@ -365,3 +365,15 @@ export const getFirstAndLastDatesOfAMonth = (month) => {
     }
 
 }
+
+
+// this gets the current location and retun the last element
+// 
+export const getCurrentEntity = (location) => {
+
+    let currentLocationArr = location.split("/");
+
+    let entity = currentLocationArr[currentLocationArr.length - 1];
+
+    return entity;
+};

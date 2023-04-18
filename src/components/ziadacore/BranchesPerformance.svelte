@@ -9,7 +9,7 @@
     import { Link } from "svelte-navigator";
     import dayjs from "dayjs";
     import BranchesPerformarceChart from "./BranchesPerformanceChart.svelte";
-    import BranchesPerformanceTrend from "./BranchesPerformanceTrend.svelte";
+  
 
     let startDate;
 

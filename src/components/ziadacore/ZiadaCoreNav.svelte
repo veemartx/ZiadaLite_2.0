@@ -36,15 +36,6 @@
                 </div>
             </Link>
 
-            <Link to="/ziada-core/filters">
-                <div class="navCol">
-                    <div class="navIcon">
-                        <i class="ri-filter-3-line" />
-                    </div>
-                    <div class="navText">Filters</div>
-                </div>
-            </Link>
-
             <Link to="/ziada-core/performance">
                 <div class="navCol">
                     <div class="navIcon">

@@ -178,30 +178,6 @@
 <main>
     <div class="wrapper">
         <div class="content">
-            <div class="titleBar">
-                <div class="titleCol">
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <div
-                        class="backCol"
-                        on:click={() => {
-                            goBack();
-                        }}
-                    >
-                        <div class="" style="padding-right:2px">
-                            <i class="arrow left icon" />
-                        </div>
-                        <div class="">Back</div>
-                    </div>
-
-                    <div class="s-title">
-                        <i class="cog icon" /> Filters
-                    </div>
-                </div>
-                <div class="actions">
-                    <i class="ri-more-2-fill" />
-                </div>
-            </div>
-
             <div class="mainContainer">
                 <div class="filtersContainer">
                     <form class="ui form">
