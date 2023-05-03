@@ -3,10 +3,12 @@
     import { onMount } from "svelte";
     import { Link } from "svelte-navigator";
     import { apiBaseUrl } from "../../config/config";
-    import Breadcrumbs from "../Breadcrumbs.svelte";
+    import { formatDate, updateCrumbs } from "../../scripts/js/methods";
+    import SummaryCol from "../../widgets/SummaryCol.svelte";
+    import TitleActions from "../../widgets/TitleActions.svelte";
 
     let crumbs = {
-        title: "Products",
+        title: "Products At Risk",
         crumbs: [
             {
                 name: "Home",
@@ -19,7 +21,40 @@
         ],
     };
 
+    let titleActions = [
+        {
+            title: "Create (Excel List)",
+            url: "/products/create",
+            icon: "plus icon",
+            color: "dodgerblue",
+        },
+
+        {
+            title: "Add Product",
+            url: "/products/new",
+            icon: "plus square icon",
+            color: "purple",
+        },
+
+        {
+            title: "Recover Added",
+            url: "/products/recover",
+            icon: "upload icon",
+            color: "red",
+        },
+        {
+            title: "Products List",
+            url: "/products/list",
+            icon: "list icon",
+            color: "green",
+        },
+    ];
+
+    let actionsTitle = "Actions";
+
     let products = [];
+
+    let productsSummary = [];
 
     let productDetails = {};
 
@@ -78,6 +113,22 @@
         }
     };
 
+    const getSummary = async () => {
+        try {
+            let response = await axios.get(
+                `${apiBaseUrl}getProductsSummary.php`
+            );
+
+            let res = response.data;
+
+            productsSummary = res;
+
+            // console.log(res);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     const getFirstLetters = async () => {
         try {
             let response = await axios({
@@ -96,18 +147,52 @@
     };
 
     onMount(() => {
+        updateCrumbs(crumbs);
         getFirstLetters();
+        getSummary();
     });
 </script>
 
 <main>
     <div class="wrapper">
         <div class="content">
-            <div class="breadcrumbs">
-                <Breadcrumbs {crumbs} />
-            </div>
-
             <div class="productsMainContainer">
+                <div class="titleBar">
+                    <div class="title">Products</div>
+                    <div class="actions">
+                        <div class="bt">
+                            <Link to="new">
+                                <button
+                                    class="ui basic green icon small button"
+                                    style="font-size: x-small;"
+                                >
+                                    <i class="plus icon" />
+                                </button>
+                            </Link>
+                        </div>
+
+                        <div class="bt">
+                            <TitleActions
+                                title={actionsTitle}
+                                actions={titleActions}
+                            />
+                        </div>
+
+                        <!-- <button
+                            class="ui basic blue icon small button"
+                            style="font-size: x-small;"
+                        >
+                            <i class="ellipsis vertical icon" />
+                        </button> -->
+                    </div>
+                </div>
+
+                <!-- summary -->
+                <div class="productsSummaryCol">
+                    <SummaryCol summary={productsSummary} />
+                </div>
+                <!-- summary -->
+
                 <div class="firstLettersCol">
                     {#each firstLetters as fl}
                         <button
@@ -139,7 +224,6 @@
                                 <th>Expiry</th>
                                 <th>Qty</th>
                                 <th>Req'sted </th>
-                                <th>Checks </th>
                                 <th>View</th>
                             </tr>
                         </thead>
@@ -151,7 +235,7 @@
                                     <td>{pd.name}</td>
                                     <td>{pd.code}</td>
                                     <td>{pd.branch}</td>
-                                    <td>{pd.expiry}</td>
+                                    <td>{formatDate(pd.expiry)}</td>
                                     <td>{pd.qty}</td>
                                     <td
                                         style={pd.requested == "Y"
@@ -159,7 +243,6 @@
                                             : "color:red"}
                                         ><b>{pd.requested}</b></td
                                     >
-                                    <td>{pd.checks}</td>
                                     <td>
                                         <div class="actions">
                                             <Link to={`/product/pd/${pd.id}`}>
@@ -212,12 +295,33 @@
     }
 
     .firstLettersCol {
-        border-bottom: 1px solid rgba(128, 128, 128, 0.485);
+        border-bottom: 1px solid rgba(128, 128, 128, 0.222);
         padding-bottom: 1em;
+        padding-top: 1em;
     }
 
     .pagesCol {
         margin-top: 2em;
         margin-bottom: 2em;
+    }
+
+    .productsSummaryCol {
+        margin-top: 0.5em;
+        padding-bottom: 0.5em;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.222);
+    }
+
+    .title {
+        color: var(--text-primary-light);
+        font-weight: 600;
+    }
+
+    .actions {
+        padding-top: 0.5em;
+        display: flex;
+    }
+
+    .bt {
+        margin-inline: 0.5em;
     }
 </style>

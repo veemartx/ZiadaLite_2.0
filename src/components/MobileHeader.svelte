@@ -184,10 +184,6 @@
                     <div class="nav">- Trash</div>
                 </Link>
 
-                <Link to="/ziada-core">
-                    <div class="nav">- ZiadaCore <sup>&trade;</sup></div>
-                </Link>
-
                 <div class="nav" style="height: 2em;" />
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div class="nav" on:click={handleLogout}>- Logout</div>

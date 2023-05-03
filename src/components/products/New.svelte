@@ -1,7 +1,6 @@
 <script>
     // @ts-nocheck
     import { onMount } from "svelte";
-    import Breadcrumbs from "../Breadcrumbs.svelte";
     import { Notify, Report } from "notiflix";
     import { apiBaseUrl } from "../../config/config";
     import axios from "axios";
@@ -13,13 +12,31 @@
     import {
         getExpiryDateConstraints,
         getPermittedTokens,
+        updateCrumbs,
     } from "../../scripts/js/methods";
     import imageCompression from "browser-image-compression";
     import { fade } from "svelte/transition";
     import { liveQuery } from "dexie";
     import { db } from "../../db/db";
+    import Radio from "../../widgets/Radio.svelte";
+    import { AUTH_ERROR_MESSAGE } from "../../scripts/js/messages";
 
     let authTokens = [];
+
+    let productTypesOptions = [
+        {
+            value: "",
+            label: "None",
+        },
+        {
+            value: "Dead Stock",
+            label: "Dead Stock",
+        },
+        {
+            value: "Short Exp",
+            label: "Short Exp",
+        },
+    ];
 
     let localDbStoreUsers = liveQuery(() => db.users.toArray());
 
@@ -29,8 +46,8 @@
 
     const ACTION = "delete";
 
-    const AUTH_ERROR_MESSAGE =
-        "Permission Denied: Action Not Allowed For This User.Check Allowed Permissions On Your Profile For More Details";
+    const AUTH_CANCEL_MESSAGE =
+        "Addition Authentication Cannot Be Cancelled. Returning";
 
     const imageCompressorOptions = {
         maxSizeMB: 1,
@@ -153,10 +170,8 @@
     };
 
     const cancelAuthentication = () => {
-        // showAuthTokenModal = false;
-        if (confirm("Addition Authentication cannot be cancelled. Go back?")) {
-            navigate(-1);
-        }
+        showAuthTokenModal = false;
+        navigate("/");
     };
 
     const compressImage = async () => {
@@ -254,7 +269,7 @@
         try {
             let response = await axios({
                 method: "post",
-                url: apiBaseUrl + "createProduct.php",
+                url: apiBaseUrl + "addProduct.php",
                 data: fd,
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -284,9 +299,7 @@
 
         costPrice = selected.cp;
 
-        if (selected.ps != 0) {
-            packSize = selected.ps;
-        }
+        packSize = selected.ps;
 
         showAssistedProductCreationModal = false;
 
@@ -359,6 +372,7 @@
     };
 
     onMount(async () => {
+        updateCrumbs(crumbs);
         getFirstLetters();
         getDeadStockApprovedList();
         getProductsList();
@@ -373,17 +387,12 @@
     });
 
     showAuthTokenModal = true;
-
     // console.log(authTokens);
 </script>
 
 <main>
     <div class="wrapper">
         <div class="content">
-            <div class="breadcrumbs">
-                <Breadcrumbs {crumbs} />
-            </div>
-
             <!-- the big form -->
             <form
                 id="addProductListForm"
@@ -398,8 +407,14 @@
                             <br />
                             <div class="">
                                 <div class="field required">
-                                    <label for=""> Product Type </label>
-                                    <select
+                                    <Radio
+                                        options={productTypesOptions}
+                                        fontSize={13}
+                                        legend="Product Type"
+                                        bind:userSelected={productType}
+                                    />
+
+                                    <!-- <select
                                         name="productType"
                                         id="productType"
                                         bind:value={productType}
@@ -411,7 +426,7 @@
                                         <option value="Short Exp"
                                             >Short Exp</option
                                         >
-                                    </select>
+                                    </select> -->
                                 </div>
                             </div>
                             <div class="">
@@ -446,7 +461,7 @@
                         </div>
 
                         <div class="segmentContainer" style="margin-top: 1em;">
-                            <div class="titlebar ">
+                            <div class="titlebar">
                                 <div class="title">Product Gallery</div>
 
                                 <div class="actionBtns" />
@@ -656,7 +671,7 @@
                         </div>
 
                         <div class="segmentContainer" style="margin-top: 1em;">
-                            <div class="titlebar ">
+                            <div class="titlebar">
                                 <div class="title">Extra Details</div>
                             </div>
 
@@ -672,6 +687,7 @@
                                             placeholder="0"
                                             bind:value={packSize}
                                             required
+                                            min="1"
                                         />
                                     </div>
                                 </div>
@@ -756,6 +772,7 @@
         bind:authenticatedUser
         payload={authTokens}
         errorMessage={AUTH_ERROR_MESSAGE}
+        cancelMessage={AUTH_CANCEL_MESSAGE}
         on:success={authTokenSuccess}
         on:cancel={cancelAuthentication}
     />

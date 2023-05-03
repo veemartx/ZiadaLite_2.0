@@ -4,7 +4,15 @@
     import { onMount, createEventDispatcher } from "svelte";
     import { fly } from "svelte/transition";
     import { Confirm } from "notiflix";
+    import AppsQuickAccess from "./AppsQuickAccess.svelte";
+    import { useLocation } from "svelte-navigator";
+    import QuickLinks from "./dash/QuickLinks.svelte";
 
+    const location = useLocation();
+
+    $: {
+        handleLocationChange($location);
+    }
 
     // send message to close modal
     const dispatch = createEventDispatcher();
@@ -12,6 +20,10 @@
     function closeModal() {
         dispatch("close");
     }
+
+    const handleLocationChange = (location) => {
+        closeModal();
+    };
 
     onMount(() => {
         // change body attributes
@@ -38,15 +50,21 @@
         >
             <div transition:fly={{ x: 200, duration: 400 }} class="sidebar">
                 <div class="sideBarTitle">
-                    <div class="title" />
+                    <div class="title">Side Panel</div>
                     <div class="close closeModal">
                         <i on:click={closeModal} class="ri-close-line" />
                     </div>
                 </div>
 
-                <div class="deviceDetailsContainer">
-                 
+                <div class="quickLinks">
+                    <QuickLinks />
                 </div>
+
+                <!-- apps quick access -->
+                <div class="appsQuickAccess">
+                    <AppsQuickAccess />
+                </div>
+                <!-- apps quick access -->
             </div>
         </div>
     </div>
@@ -74,26 +92,24 @@
     }
 
     .sideBarTitle {
-        border-bottom: 1px solid rgba(128, 128, 128, 0.212);
+        border-bottom: 1px solid rgba(128, 128, 128, 0.074);
         font-weight: 500;
         font-size: 20px;
         display: flex;
         justify-content: space-between;
     }
 
-    .deviceDetailsContainer {
-        border-radius: 5px;
-        border: 1px solid rgba(0, 0, 255, 0.173);
-        min-height: 5em;
-        margin-top: 1em;
-    }
-
-
     .title {
-        font-weight: 600;
-        font-size: 23px;
+        font-weight: 500;
+        font-size: 20px;
+        color: var(--text-primary-light);
     }
 
+    .closeModal {
+        color: crimson;
+        padding-right: 0.1em;
+        padding-top: 0.3em;
+    }
 
     @media only screen and (min-width: 640px) {
         .sidebar {

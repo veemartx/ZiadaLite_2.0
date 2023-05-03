@@ -1,9 +1,6 @@
 <script>
     // @ts-nocheck
     import { createEventDispatcher, onMount } from "svelte";
-    import { apiBaseUrl } from "../../config/config";
-    import axios from "axios";
-    import { Notify } from "notiflix/build/notiflix-notify-aio";
     import { Confirm } from "notiflix";
 
     Confirm.init({

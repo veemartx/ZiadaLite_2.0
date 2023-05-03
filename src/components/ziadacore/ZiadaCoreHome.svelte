@@ -1,4 +1,5 @@
 <script>
+    import InventoryTreeChart from "./InventoryTreeChart.svelte";
     import ZiadaCoreNav from "./ZiadaCoreNav.svelte";
 </script>
 
@@ -7,7 +8,15 @@
         <div class="mobileSettingsNavBar">
             <ZiadaCoreNav />
         </div>
-        <div class="computerComputerHome">Ziada Core Home</div>
+        <div class="computerComputerHome">
+            <div class="titleBar">
+                <div class="title">ZiadaCore</div>
+            </div>
+
+            <div class="contentBar">
+                <InventoryTreeChart />
+            </div>
+        </div>
     </div>
 </main>
 

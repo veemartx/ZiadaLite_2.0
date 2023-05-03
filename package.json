@@ -19,6 +19,8 @@
     "browser-image-compression": "^2.0.2",
     "dayjs": "^1.11.7",
     "dexie": "^4.0.1-alpha.10",
+    "downloadjs": "^1.4.7",
+    "html-to-image": "^1.11.11",
     "js-base64": "^3.7.5",
     "notiflix": "^3.2.5",
     "remixicon": "^2.5.0",

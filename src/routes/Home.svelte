@@ -1,4 +1,5 @@
 <script>
+    import { Crumbs } from "../stores/crumbs-store";
     import { Route, Router } from "svelte-navigator";
     import ActionButton from "../components/ActionButton.svelte";
     import Dash from "../components/Dash.svelte";
@@ -12,7 +13,9 @@
     import Transfers from "./Transfers.svelte";
     import Trash from "./Trash.svelte";
     import Users from "./Users.svelte";
-    import ZiadaCore from "./ZiadaCore.svelte";
+    import Apps from "./Apps.svelte";
+    import Breadcrumbs from "../components/Breadcrumbs.svelte";
+    import Orders from "./Orders.svelte";
 
     let showSidebarModal = false;
 </script>
@@ -23,6 +26,10 @@
     </header>
 
     <div class="vspacer" />
+
+    <div class="breadcrumbs">
+        <Breadcrumbs crumbs={$Crumbs} />
+    </div>
 
     <div class="mainContentContainer">
         <Router>
@@ -62,8 +69,12 @@
                 <Product />
             </Route>
 
-            <Route path="/ziada-core/*">
-                <ZiadaCore />
+            <Route path="/orders/*">
+                <Orders />
+            </Route>
+
+            <Route path="/apps/*">
+                <Apps />
             </Route>
         </Router>
     </div>
@@ -107,10 +118,8 @@
 
     .mainContentContainer {
         min-height: 120vh;
-        /* max-height: 900vh; */
         overflow: auto;
         margin-inline: 0.6em;
-        /* background: red; */
     }
 
     footer {
@@ -128,7 +137,6 @@
             max-height: 900vh;
             overflow: auto;
             margin-inline: 0;
-            padding-top: 1em;
         }
     }
 </style>

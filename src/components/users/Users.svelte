@@ -3,10 +3,8 @@
     import Breadcrumbs from "../Breadcrumbs.svelte";
     import { Dexie, liveQuery } from "dexie";
     import { db } from "../../db/db";
-    import { fade } from "svelte/transition";
     import { onMount } from "svelte";
-    import axios from "axios";
-    import { apiBaseUrl } from "../../config/config";
+
     import AuthToken from "../AuthToken.svelte";
     import { getPermittedTokens } from "../../scripts/js/methods";
     import Export from "../export/Export.svelte";
@@ -67,6 +65,9 @@
     const AUTH_ERROR_MESSAGE =
         "Permission Denied: Action Not Allowed For This User.Check Allowed Permissions On Your Profile For More Details";
 
+    const AUTH_CANCEL_MESSAGE =
+        "Users Authentication Cannot Be Cancelled. Returning";
+
     let crumbs = {
         title: "Users",
         crumbs: [
@@ -99,10 +100,8 @@
     };
 
     const cancelAuthentication = () => {
-        // showAuthTokenModal = false;
-        if (confirm("Addition Authentication cannot be cancelled. Go back?")) {
-            navigate(-1);
-        }
+        showAuthTokenModal = false;
+        navigate("/");
     };
 
     onMount(() => {});
@@ -128,7 +127,7 @@
                             </button>
 
                             <button
-                                class="ui mini green  icon button"
+                                class="ui mini green icon button"
                                 style="font-size: 12px;"
                             >
                                 <i class="plus icon" />
@@ -143,7 +142,7 @@
 
                 <div class="" style="margin-top: 1em;overflow-x:auto;">
                     <table
-                        class="ui very basic single line unstackable striped  table"
+                        class="ui very basic single line unstackable striped table"
                     >
                         <thead>
                             <tr>
@@ -206,6 +205,8 @@
         bind:authenticatedUser
         payload={authTokens}
         errorMessage={AUTH_ERROR_MESSAGE}
+        cancelMessage="Users View Auth Cannot Be Cancelled.Returning"
+        ;
         on:success={authTokenSuccess}
         on:cancel={cancelAuthentication}
     />

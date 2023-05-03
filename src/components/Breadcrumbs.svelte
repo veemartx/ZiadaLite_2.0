@@ -12,7 +12,7 @@
         <div class="content">
             <div class="crumpsContainer">
                 <div class="title">
-                    {crumbs.title}
+                    {@html crumbs.title}
                 </div>
 
                 <div class="crumbs">

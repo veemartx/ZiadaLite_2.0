@@ -9,6 +9,8 @@
 
     export let errorMessage;
 
+    export let cancelMessage;
+
     // an array of tokens on which to authenticate against
     export let payload = [];
 
@@ -25,6 +27,14 @@
     }
 
     function cancelAuth() {
+        Notify.failure(cancelMessage, {
+            ID: "MKA",
+            timeout: 4000,
+            showOnlyTheLastOne: true,
+            cssAnimationStyle: "from-bottom",
+            zindex: 1000000000,
+        });
+
         dispatch("cancel");
     }
 
@@ -67,7 +77,7 @@
     };
 
     onMount(() => {
-        console.log(payload);
+        // console.log(payload);
     });
 </script>
 

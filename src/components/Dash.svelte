@@ -1,26 +1,29 @@
 <script>
+    import { updateCrumbs } from "../scripts/js/methods";
     import MainDashData from "./dash/MainDashData.svelte";
     import MainDashStats from "./dash/MainDashStats.svelte";
-    import QuickLinks from "./dash/QuickLinks.svelte";
     import TopSalesTrends from "./dash/TopSalesTrends.svelte";
     import MainProgressBar from "./MainProgressBar.svelte";
-    import { loading } from "../stores/main-loader";
     import { onMount } from "svelte";
-    import axios from "axios";
-    import { apiBaseUrl } from "../config/config";
+
+    let crumbs = {
+        title: "Dashboard",
+        crumbs: [
+            {
+                name: "Home",
+                url: "/",
+            },
+            {
+                name: "Dashboard",
+                url: "/dash/",
+            },
+        ],
+    };
 
     let showMainLoadingBar = false;
 
-    // const LOADING_OBJ = {
-    //     n: "users",
-    // };
-
-    // const startLoading = () => {
-    //     // loading.update((n) => n + 1);
-    //     $loading = [...$loading, LOADING_OBJ];
-    // };
-
     onMount(() => {
+        updateCrumbs(crumbs);
     });
 </script>
 
@@ -30,11 +33,6 @@
             {#if showMainLoadingBar}
                 <MainProgressBar bind:showMainLoadingBar />
             {/if}
-
-            <!-- qlinks -->
-            <div class="quickLinks">
-                <QuickLinks />
-            </div>
 
             <div class="mainStats">
                 <MainDashStats />

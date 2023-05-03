@@ -5,6 +5,9 @@
 <main>
     <div class="wrapper">
         <div class="content">
+            <div class="titlebar">
+                <div class="title">Quick Links</div>
+            </div>
             <div class="qlinksColumn">
                 <Link to="/products/new">
                     <div class="qlink">
@@ -24,19 +27,17 @@
                     </div>
                 </a>
 
-                <Link to="/issues">
-                    <div class="qlink">
-                        <div class="qli">
-                            <i class="ri-customer-service-line" />
-                        </div>
-                        <div class="qlt">Support</div>
-                    </div>
-                </Link>
-
                 <Link to="/services">
                     <div class="qlink">
                         <div class="qli"><i class="ri-apps-line" /></div>
                         <div class="qlt">Services</div>
+                    </div>
+                </Link>
+
+                <Link to="/apps">
+                    <div class="qlink">
+                        <div class="qli"><i class="ri-apps-line" /></div>
+                        <div class="qlt">Apps</div>
                     </div>
                 </Link>
             </div>
@@ -50,13 +51,16 @@
         margin-top: 1em;
     }
 
-    .qlinksColumn {
-        display: flex;
-        justify-content: right;
+    .content {
+        border: 1px solid rgba(255, 166, 0, 0.345);
     }
 
     .qlinksColumn {
-        padding: 0.5em;
+        display: flex;
+        justify-content: space-between;
+        padding-top: 1em;
+        flex-wrap: wrap;
+        margin-right: 2px;
     }
 
     .qlink {
@@ -77,6 +81,17 @@
         color: var(--text-primary-light);
     }
 
+    .title {
+        color: green;
+        font-size: 15px;
+        padding: 0.8em;
+        font-weight: 600;
+    }
+
+    .titlebar {
+        border-bottom: 1px solid rgba(255, 166, 0, 0.345);
+
+    }
     @media only screen and (min-width: 640px) {
         main {
             background: #fff;
