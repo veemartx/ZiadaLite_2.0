@@ -48,6 +48,12 @@
             icon: "list icon",
             color: "green",
         },
+        {
+            title: "Approved Additions",
+            url: "/products/approved-additions",
+            icon: "check icon",
+            color: "brown",
+        },
     ];
 
     let actionsTitle = "Actions";
@@ -177,13 +183,6 @@
                                 actions={titleActions}
                             />
                         </div>
-
-                        <!-- <button
-                            class="ui basic blue icon small button"
-                            style="font-size: x-small;"
-                        >
-                            <i class="ellipsis vertical icon" />
-                        </button> -->
                     </div>
                 </div>
 
@@ -312,7 +311,6 @@
     }
 
     .title {
-        color: var(--text-primary-light);
         font-weight: 600;
     }
 

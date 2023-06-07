@@ -6,14 +6,14 @@
     import { Link } from "svelte-navigator";
     import axios from "axios";
     import { apiBaseUrl } from "../../config/config";
-    import BodCheck from "./BodCheck.svelte";
     import { v4 } from "uuid";
     import { liveQuery } from "dexie";
     import { db } from "../../db/db";
     import { getPermittedTokens } from "../../scripts/js/methods";
     import AuthToken from "../AuthToken.svelte";
+    import UploadApproved from "./UploadApproved.svelte";
 
-    let showBodCheckModal = false;
+    let showUploadAAsModal = false;
 
     let authTokens = [];
 
@@ -51,38 +51,37 @@
     }
 
     let crumbs = {
-        title: "Orders",
+        title: "Approved Additions",
         crumbs: [
             {
                 name: "Home",
                 url: "/",
             },
             {
-                name: "Orders",
-                url: "/orders/",
+                name: "Approved Addition",
+                url: "/approved-additions/",
             },
         ],
     };
 
-    let branchOrders = [];
+    let approvedAdditions = [];
 
     const getOrders = async () => {
         let response = await axios({
             method: "get",
-            url: apiBaseUrl + "getBranchOrders.php",
+            url: apiBaseUrl + "getApprovedMonthyAdditions.php",
         });
 
         let res = response.data;
 
         // console.log(res);
-        branchOrders = res;
+        approvedAdditions = res;
     };
 
     const authTokenSuccess = () => {
         showAuthTokenModal = false;
 
-        // show bodCheck modal
-        showBodCheckModal = true;
+        showUploadAAsModal = true;
     };
 
     const cancelAuthentication = () => {
@@ -100,7 +99,7 @@
     <div class="wrapper">
         <div class="content">
             <div class="titleBar">
-                <div class="title">Orders</div>
+                <div class="title">Approved Additions</div>
                 <div class="action">
                     <button
                         on:click={() => {
@@ -108,7 +107,7 @@
                         }}
                         class="ui icon mini teal basic button"
                     >
-                        <i class="check icon" />Check.Bod
+                        <i class="plus icon" /> New
                     </button>
                 </div>
             </div>
@@ -120,65 +119,22 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>BodNo</th>
                             <th>Branch</th>
-                            <th>Items</th>
-                            <th>Total Cost</th>
-                            <th>
-                                <i style="color: red;" class="ri-truck-line" /> Order
-                                To</th
-                            >
-                            <th
-                                >Deliver To <i
-                                    style="color:green"
-                                    class="ri-truck-line"
-                                /></th
-                            >
-                            <th>Prepared By</th>
-                            <th
-                                >Actions <i
-                                    style="color: purple;"
-                                    class="ri-list-check-2"
-                                /></th
-                            >
+                            <th>Approved</th>
+                            <th>Init</th>
+                            <th>Aprroved At</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {#each branchOrders as bod, i}
+                        {#each approvedAdditions as aa, i}
                             <tr>
                                 <td>{i + 1}</td>
-                                <td>{bod.bodNo}</td>
-                                <td>{bod.branch}</td>
-                                <td>{bod.items}</td>
-                                <td
-                                    >{addCommas(
-                                        parseFloat(bod.totalCost),
-                                        2
-                                    )}</td
-                                >
-                                <td>{bod.orderFrom}</td>
-                                <td>{bod.deliverTo}</td>
-                                <td
-                                    ><span style="text-transform:uppercase"
-                                        >{bod.preparedBy}</span
-                                    ></td
-                                >
-                                <td>
-                                    <Link to={`/orders/bord/c/${bod.bodId}`}>
-                                        <span class="actionIcon">
-                                            <i class="ri-list-check-2" />
-                                        </span>
-                                    </Link>
-                                    &nbsp;&nbsp;
-                                    <Link to={`/orders/bord/v/${bod.bodId}`}>
-                                        <span
-                                            class="actionIcon"
-                                            style="color: crimson;"
-                                        >
-                                            <i class="ri-eye-2-line" />
-                                        </span>
-                                    </Link>
-                                </td>
+                                <td>{aa.branch}</td>
+                                <td>{aa.approved}</td>
+                                <td>{aa.init}</td>
+                                <td>{aa.approvedAt}</td>
+                                <td>js</td>
                             </tr>
                         {/each}
                     </tbody>
@@ -189,18 +145,6 @@
 </main>
 
 <!-- modals -->
-<!-- bod check modal  -->
-{#if showBodCheckModal}
-    <BodCheck
-        {authenticatedUser}
-        on:cancel={() => {
-            showBodCheckModal = false;
-        }}
-    />
-{/if}
-
-<!-- bod check modal  -->
-
 <!-- auth token modal  -->
 {#if showAuthTokenModal}
     <AuthToken
@@ -215,6 +159,13 @@
 
 <!-- auth token modal  -->
 
+<!-- approved additions modal  -->
+{#if showUploadAAsModal}
+    <UploadApproved />
+{/if}
+
+<!-- approved additions modal  -->
+
 <!-- modals -->
 
 <style>
@@ -227,15 +178,15 @@
         padding: 1em;
     }
 
+    .title {
+        color: var(--ziada-green);
+        font-weight: 600;
+    }
+
     .contentBar {
         margin-top: 1em;
         overflow-x: auto;
         padding: 1em;
     }
 
-    .actionIcon {
-        font-size: large;
-        color: green;
-        font-weight: 600;
-    }
 </style>

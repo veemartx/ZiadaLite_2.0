@@ -5,7 +5,7 @@ import { navigate } from "svelte-navigator";
 import { Crumbs } from "../../stores/crumbs-store";
 import { liveQuery } from "dexie";
 import { db } from "../../db/db";
-
+import { LocalUsers } from "../../stores/local_users_store";
 
 
 dayjs.extend(customParseFormat)
@@ -386,24 +386,10 @@ export const updateCrumbs = (crumbs) => {
     });
 };
 
-
-export const getActionAuthToken = (resource, action) => {
-
-    let localDbStoreUsers = liveQuery(() => db.users.toArray());
-
-    let localDbStorePermissions = liveQuery(() => db.permissions.toArray());
-
-    let authTokens = [];
-
-    if ($localDbStoreUsers && $localDbStorePermissions) {
-        // get allowed tokens
-        authTokens = getPermittedTokens(
-            resource,
-            action,
-            $localDbStoreUsers,
-            $localDbStorePermissions
-        );
-    }
-
-    return authTokens;
+export const updateLocalUsersStore = (users) => {
+    LocalUsers.update(() => {
+        return users;
+    })
 }
+
+

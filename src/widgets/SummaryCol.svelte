@@ -28,9 +28,11 @@
                             ? `color:${s.color}`
                             : `color:${colors[i]}`}
                     >
-                        <span class="name">{s.name} </span> <br>
+                        <span class="name">{s.name} </span> <br />
                         <span class="value"> {s.value}</span>
-                        <span class="figure">({s.number})</span>
+                        {#if s.number}
+                            <span class="figure">({s.number})</span>
+                        {/if}
                     </div>
                 {/each}
             </div>

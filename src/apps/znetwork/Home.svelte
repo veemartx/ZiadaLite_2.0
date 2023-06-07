@@ -6,12 +6,11 @@
     import { Link } from "svelte-navigator";
     import axios from "axios";
     import { apiBaseUrl } from "../../config/config";
-    import BodCheck from "./BodCheck.svelte";
     import { v4 } from "uuid";
     import { liveQuery } from "dexie";
     import { db } from "../../db/db";
     import { getPermittedTokens } from "../../scripts/js/methods";
-    import AuthToken from "../AuthToken.svelte";
+    import AuthToken from "../../components/AuthToken.svelte";
 
     let showBodCheckModal = false;
 
@@ -51,15 +50,19 @@
     }
 
     let crumbs = {
-        title: "Orders",
+        title: "ZNetwork <sup>&trade;</sup>",
         crumbs: [
             {
                 name: "Home",
                 url: "/",
             },
             {
-                name: "Orders",
-                url: "/orders/",
+                name: "Apps",
+                url: "/apps/",
+            },
+            {
+                name: "ZNetwork",
+                url: "/apps/znetwork",
             },
         ],
     };
@@ -190,14 +193,6 @@
 
 <!-- modals -->
 <!-- bod check modal  -->
-{#if showBodCheckModal}
-    <BodCheck
-        {authenticatedUser}
-        on:cancel={() => {
-            showBodCheckModal = false;
-        }}
-    />
-{/if}
 
 <!-- bod check modal  -->
 

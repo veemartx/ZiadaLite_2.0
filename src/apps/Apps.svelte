@@ -10,6 +10,8 @@
     import Tasks from "./tasks/Home.svelte";
     import { onMount } from "svelte";
     import { updateCrumbs } from "../scripts/js/methods";
+    import ZiadaDeliver from "./zdeliver/Home.svelte";
+    import ZiadaNetwork from "./znetwork/Home.svelte";
 
     let crumbs = {
         title: "Apps",
@@ -60,6 +62,14 @@
 
                     <Route path="/tasks/*">
                         <Tasks />
+                    </Route>
+
+                    <Route path="/znetwork/*">
+                        <ZiadaNetwork />
+                    </Route>
+
+                    <Route path="/zdeliver/*">
+                        <ZiadaDeliver />
                     </Route>
                 </Router>
             </div>

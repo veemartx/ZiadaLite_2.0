@@ -17,7 +17,7 @@
     let authenticatedUser;
 
     let localDbStoreUsers = liveQuery(() =>
-        db.users.where("position").notEqual("position").toArray()
+        db.users.where("position").notEqual("branch").toArray()
     );
 
     let localDbStorePermissions = liveQuery(() => db.permissions.toArray());

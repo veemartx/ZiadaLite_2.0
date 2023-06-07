@@ -6,6 +6,9 @@
     import ZConnectIcon from "../assets/icons/zconnect.png";
     import SupportIcon from "../assets/icons/support.png";
 
+    import MarketingIcon from "../assets/icons/marketing.png";
+    import DeliverIcon from "../assets/icons/deliver.png";
+
     import { Link } from "svelte-navigator";
 </script>
 
@@ -21,7 +24,7 @@
                         <div class="appIcon">
                             <img src={ZConnectIcon} alt="connect icon" />
                         </div>
-                        <div class="appName">ZConnect</div>
+                        <div class="appName">ZConnect <sup>&trade;</sup></div>
                     </Link>
                 </div>
 
@@ -39,7 +42,7 @@
                         <div class="appIcon">
                             <img src={TasksIcon} alt="tasks icon" />
                         </div>
-                        <div class="appName">Ziada Tasks</div>
+                        <div class="appName">ZTasks <sup>&trade;</sup></div>
                     </Link>
                 </div>
 
@@ -67,6 +70,24 @@
                             <img src={SupportIcon} alt="sales icon" />
                         </div>
                         <div class="appName">Tech Support</div>
+                    </Link>
+                </div>
+
+                <div class="appPanel">
+                    <Link to="/apps/zdeliver">
+                        <div class="appIcon">
+                            <img src={DeliverIcon} alt="deliver icon" />
+                        </div>
+                        <div class="appName">ZDeliver <sup>&trade;</sup></div>
+                    </Link>
+                </div>
+
+                <div class="appPanel">
+                    <Link to="/apps/znetwork">
+                        <div class="appIcon">
+                            <img src={MarketingIcon} alt="network icon" />
+                        </div>
+                        <div class="appName">ZNetwork <sup>&trade;</sup></div>
                     </Link>
                 </div>
             </div>

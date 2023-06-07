@@ -23,6 +23,7 @@
     "html-to-image": "^1.11.11",
     "js-base64": "^3.7.5",
     "notiflix": "^3.2.5",
+    "pdfmake": "^0.2.7",
     "remixicon": "^2.5.0",
     "svelte-apexcharts": "^1.0.2",
     "svelte-navigator": "^3.2.2",

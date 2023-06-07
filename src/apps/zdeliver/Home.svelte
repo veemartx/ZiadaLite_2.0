@@ -2,18 +2,25 @@
     // @ts-nocheck
 
     import { onMount } from "svelte";
-    import { addCommas, updateCrumbs } from "../../scripts/js/methods";
+    import {
+        addCommas,
+        formatDate,
+        updateCrumbs,
+    } from "../../scripts/js/methods";
     import { Link } from "svelte-navigator";
     import axios from "axios";
     import { apiBaseUrl } from "../../config/config";
-    import BodCheck from "./BodCheck.svelte";
     import { v4 } from "uuid";
     import { liveQuery } from "dexie";
     import { db } from "../../db/db";
     import { getPermittedTokens } from "../../scripts/js/methods";
-    import AuthToken from "../AuthToken.svelte";
+    import AuthToken from "../../components/AuthToken.svelte";
+    import CreateDelivery from "./CreateDelivery.svelte";
+    import Delivery from "./Delivery.svelte";
 
-    let showBodCheckModal = false;
+    let showCreateDeliveryModal = false;
+
+    let showDeliveryModal = false;
 
     let authTokens = [];
 
@@ -21,9 +28,11 @@
 
     let authenticatedUser;
 
-    const RESOURCE = "branch-orders";
+    let selectedDelivery;
 
-    const ACTION = "check";
+    const RESOURCE = "deliveries";
+
+    const ACTION = "create";
 
     const AUTH_ERROR_MESSAGE =
         "Permission Denied: Action Not Allowed For This User.Check Allowed Permissions On Your Profile For More Details";
@@ -51,38 +60,42 @@
     }
 
     let crumbs = {
-        title: "Orders",
+        title: "ZDeliver <sup>&trade;<sup>",
         crumbs: [
             {
                 name: "Home",
                 url: "/",
             },
             {
-                name: "Orders",
-                url: "/orders/",
+                name: "Apps",
+                url: "/apps/",
+            },
+            {
+                name: "ZDeliver",
+                url: "/apps/zconnect",
             },
         ],
     };
 
-    let branchOrders = [];
+    let deliveries = [];
 
-    const getOrders = async () => {
+    const getDeliveries = async () => {
         let response = await axios({
             method: "get",
-            url: apiBaseUrl + "getBranchOrders.php",
+            url: apiBaseUrl + "getDeliveries.php",
         });
 
         let res = response.data;
 
         // console.log(res);
-        branchOrders = res;
+        deliveries = res;
     };
 
     const authTokenSuccess = () => {
         showAuthTokenModal = false;
 
         // show bodCheck modal
-        showBodCheckModal = true;
+        showCreateDeliveryModal = true;
     };
 
     const cancelAuthentication = () => {
@@ -92,7 +105,7 @@
     onMount(() => {
         updateCrumbs(crumbs);
 
-        getOrders();
+        getDeliveries();
     });
 </script>
 
@@ -100,7 +113,7 @@
     <div class="wrapper">
         <div class="content">
             <div class="titleBar">
-                <div class="title">Orders</div>
+                <div class="title">Deliveries</div>
                 <div class="action">
                     <button
                         on:click={() => {
@@ -108,7 +121,7 @@
                         }}
                         class="ui icon mini teal basic button"
                     >
-                        <i class="check icon" />Check.Bod
+                        <i class="plus icon" />Add
                     </button>
                 </div>
             </div>
@@ -120,21 +133,14 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>BodNo</th>
                             <th>Branch</th>
-                            <th>Items</th>
+                            <th>Destination</th>
+                            <th>Receipt</th>
+                            <th>Products</th>
                             <th>Total Cost</th>
-                            <th>
-                                <i style="color: red;" class="ri-truck-line" /> Order
-                                To</th
-                            >
-                            <th
-                                >Deliver To <i
-                                    style="color:green"
-                                    class="ri-truck-line"
-                                /></th
-                            >
-                            <th>Prepared By</th>
+                            <th>Total Retail</th>
+                            <th>Created By</th>
+                            <th>Created At</th>
                             <th
                                 >Actions <i
                                     style="color: purple;"
@@ -144,40 +150,29 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {#each branchOrders as bod, i}
+                        {#each deliveries as d, i}
                             <tr>
                                 <td>{i + 1}</td>
-                                <td>{bod.bodNo}</td>
-                                <td>{bod.branch}</td>
-                                <td>{bod.items}</td>
-                                <td
-                                    >{addCommas(
-                                        parseFloat(bod.totalCost),
-                                        2
-                                    )}</td
-                                >
-                                <td>{bod.orderFrom}</td>
-                                <td>{bod.deliverTo}</td>
-                                <td
-                                    ><span style="text-transform:uppercase"
-                                        >{bod.preparedBy}</span
-                                    ></td
-                                >
+                                <td>{d.hostBranch}</td>
+                                <td>{d.destination}</td>
+                                <td>{d.receiptNumber}</td>
+                                <td>{d.products.length}</td>
+                                <td>{addCommas(d.totalCost, 2)}</td>
+                                <td>{addCommas(d.totalRetail, 2)}</td>
+                                <td>{d.createdBy}</td>
+                                <td>{formatDate(d.createdAt)}</td>
+
                                 <td>
-                                    <Link to={`/orders/bord/c/${bod.bodId}`}>
-                                        <span class="actionIcon">
-                                            <i class="ri-list-check-2" />
-                                        </span>
-                                    </Link>
-                                    &nbsp;&nbsp;
-                                    <Link to={`/orders/bord/v/${bod.bodId}`}>
-                                        <span
-                                            class="actionIcon"
-                                            style="color: crimson;"
-                                        >
-                                            <i class="ri-eye-2-line" />
-                                        </span>
-                                    </Link>
+                                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                    <span
+                                        on:click={() => {
+                                            selectedDelivery = d;
+                                            showDeliveryModal = true;
+                                        }}
+                                        class="actionIcon"
+                                    >
+                                        <i class="ri-eye-2-line" />
+                                    </span>
                                 </td>
                             </tr>
                         {/each}
@@ -190,14 +185,6 @@
 
 <!-- modals -->
 <!-- bod check modal  -->
-{#if showBodCheckModal}
-    <BodCheck
-        {authenticatedUser}
-        on:cancel={() => {
-            showBodCheckModal = false;
-        }}
-    />
-{/if}
 
 <!-- bod check modal  -->
 
@@ -214,6 +201,34 @@
 {/if}
 
 <!-- auth token modal  -->
+
+<!-- create delivery modal -->
+{#if showCreateDeliveryModal}
+    <CreateDelivery
+        {authenticatedUser}
+        on:close={() => {
+            showCreateDeliveryModal = false;
+        }}
+        on:success={() => {
+            getDeliveries();
+            showCreateDeliveryModal = false;
+        }}
+    />
+{/if}
+
+<!-- create delivery modal -->
+
+<!-- delivery -->
+{#if showDeliveryModal}
+    <Delivery
+        delivery={selectedDelivery}
+        on:close={() => {
+            showDeliveryModal = false;
+        }}
+    />
+{/if}
+
+<!-- delivery -->
 
 <!-- modals -->
 
@@ -237,5 +252,6 @@
         font-size: large;
         color: green;
         font-weight: 600;
+        cursor: pointer;
     }
 </style>

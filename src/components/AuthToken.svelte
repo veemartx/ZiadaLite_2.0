@@ -27,7 +27,7 @@
     }
 
     function cancelAuth() {
-        Notify.failure(cancelMessage, {
+        Notify.warning(cancelMessage, {
             ID: "MKA",
             timeout: 4000,
             showOnlyTheLastOne: true,

@@ -16,7 +16,10 @@
                 <div class="statDetails">
                     <div class="statName">{s.name}</div>
 
-                    <div class="statValue">
+                    <div
+                        class="statValue"
+                        style={s.color ? `color:${s.color}` : `color:black`}
+                    >
                         {#if isNaN}
                             {s.value}
                         {:else}

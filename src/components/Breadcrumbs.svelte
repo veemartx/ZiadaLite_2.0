@@ -58,6 +58,10 @@
         color: var(--background-primary);
     }
 
+    .crumbNav {
+        text-transform: capitalize;
+    }
+
     @media only screen and (min-width: 640px) {
         main {
             border-bottom: 1px dotted rgba(81, 81, 81, 0.284);

@@ -5,7 +5,11 @@
     import { onMount } from "svelte";
     import { useLocation } from "svelte-navigator";
     import { apiBaseUrl } from "../../config/config";
-    import { formatDate, updateCrumbs } from "../../scripts/js/methods";
+    import {
+        formatDate,
+        getPermittedTokens,
+        updateCrumbs,
+    } from "../../scripts/js/methods";
     import LeftIconStatWidgets from "../../widgets/LeftIconStatWidgets.svelte";
     import ProductActions from "./ProductActions.svelte";
     import TransactionHistory from "./TransactionHistory.svelte";
@@ -50,7 +54,7 @@
 
     let productId;
 
-    let product = {};
+    let product;
 
     let isImageLoaded = false;
 
@@ -88,15 +92,17 @@
         window.scrollTo(0, 0);
 
         if ($location) {
-            getProductId($location);
+            getProduct($location);
         }
     }
 
     $: {
-        updateStats(product);
+        if (product) {
+            updateStats(product);
+        }
     }
 
-    const getProductId = async ($location) => {
+    const getProduct = async ($location) => {
         let pathnameArr = $location.pathname.split("/");
 
         let pid = pathnameArr[pathnameArr.length - 1];
@@ -123,7 +129,7 @@
 
             productImageUrl = product.image;
 
-            console.log(res);
+            // console.log(res);
         } catch (err) {
             console.log(err);
         }
@@ -181,165 +187,182 @@
 <main>
     <div class="wrapper">
         <div class="content" id="content">
-            <div class="titleBar">
-                <div class="title">
-                    {product.name}
-                </div>
-
-                <div class="action">
-                    <button
-                        on:click={takeScreenshot}
-                        class="ui mini icon basic green button"
-                    >
-                        <i class="camera icon" />
-                    </button>
-                </div>
-            </div>
-
-            <div class="productContainer">
-                <div class="imageCol">
-                    <img
-                        src={`${productImageUrl}`}
-                        alt=""
-                        on:load={handleImageLoad}
-                    />
-                </div>
-                <div class="detailsCol">
-                    <div class="productName">
-                        Name: {product.name ? product.name.toLowerCase() : ""}
+            {#if product}
+                <div class="titleBar">
+                    <div class="title">
+                        {product.name}
                     </div>
 
-                    <div class="productDetailCol">
-                        <div
-                            class="productType"
-                            style={product.type == "Dead Stock"
-                                ? "color:crimson"
-                                : "color:orangered"}
+                    <div class="action">
+                        <button
+                            on:click={takeScreenshot}
+                            class="ui mini icon basic green button"
                         >
-                            Type: {product.type}
-                        </div>
-
-                        <div class="productCode">
-                            Code: {product.code}
-                        </div>
-
-                        <div class="productBranch">
-                            Branch: {product.branch}
-                        </div>
+                            <i class="camera icon" />
+                        </button>
                     </div>
+                </div>
 
-                    {#if product.expiryDate}
-                        <!-- some det expiry,added,added by -->
+                <div class="productContainer">
+                    <div class="imageCol">
+                        <img
+                            src={`${productImageUrl}`}
+                            alt=""
+                            on:load={handleImageLoad}
+                        />
+                    </div>
+                    <div class="detailsCol">
+                        <div class="productName">
+                            Name: {product.name
+                                ? product.name.toLowerCase()
+                                : ""}
+                        </div>
+
                         <div class="productDetailCol">
-                            <div class="pedCol">
-                                <span class="pcText"> Expiry Date:</span>
-                                <span class="pcVal"
-                                    >{formatDate(product.expiryDate)}</span
-                                >
+                            <div
+                                class="productType"
+                                style={product.type == "Dead Stock"
+                                    ? "color:crimson"
+                                    : "color:orangered"}
+                            >
+                                Type: {product.type}
                             </div>
 
-                            <div class="pedCol">
-                                <span class="pcText"> Added On: </span>
-                                <span class="pcVal"
-                                    >{formatDate(product.addedOn)}</span
-                                >
+                            <div class="productCode">
+                                Code: {product.code}
                             </div>
 
-                            <div class="pedCol">
-                                <span class="pcText"> Added By:</span>
-                                <span class="pcVal"> {product.addedBy}</span>
+                            <div class="productBranch">
+                                Branch: {product.branch}
                             </div>
                         </div>
-                        <!-- some det expiry,added,added by -->
 
-                        <!-- some det booked by : booked on-->
-                        <!-- booked -->
-
-                        {#if product.booked == "1"}
-                            <div class="productDetailColTitle">Booked</div>
-
+                        {#if product.expiryDate}
+                            <!-- some det expiry,added,added by -->
                             <div class="productDetailCol">
                                 <div class="pedCol">
-                                    <span class="pcText"> By:</span>
-                                    <span class="pcVal">{product.bookedBy}</span
-                                    >
-                                </div>
-
-                                <div class="pedCol">
-                                    <span class="pcText">In:</span>
-                                    <span class="pcVal">{product.from}</span>
-                                </div>
-
-                                <div class="pedCol">
-                                    <span class="pcText">Date:</span>
+                                    <span class="pcText"> Expiry Date:</span>
                                     <span class="pcVal"
-                                        >{formatDate(product.bookedOn)}</span
-                                    >
-                                </div>
-                            </div>
-                        {/if}
-
-                        <!-- booked -->
-                        <!-- some det booked by : booked on-->
-
-                        <!-- some det pushed by : pushed on-->
-                        <!-- pushed -->
-                        {#if product.pushed}
-                            <div class="productDetailColTitle">Pushed</div>
-                            <div class="productDetailCol">
-                                <div class="pedCol">
-                                    <span class="pcText">From:</span>
-                                    <span class="pcVal"
-                                        >{product.pushedFrom}</span
+                                        >{formatDate(product.expiryDate)}</span
                                     >
                                 </div>
 
                                 <div class="pedCol">
-                                    <span class="pcText"> Date:</span>
+                                    <span class="pcText"> Added On: </span>
                                     <span class="pcVal"
                                         >{formatDate(product.addedOn)}</span
                                     >
                                 </div>
 
                                 <div class="pedCol">
-                                    <span class="pcText"> Init Added:</span>
+                                    <span class="pcText"> Added By:</span>
                                     <span class="pcVal">
-                                        {formatDate(product.initAddedOn)}</span
+                                        {product.addedBy}</span
                                     >
                                 </div>
                             </div>
+                            <!-- some det expiry,added,added by -->
+
+                            <!-- some det booked by : booked on-->
+                            <!-- booked -->
+
+                            {#if product.booked == "1"}
+                                <div class="productDetailColTitle">Booked</div>
+
+                                <div class="productDetailCol">
+                                    <div class="pedCol">
+                                        <span class="pcText"> By:</span>
+                                        <span class="pcVal"
+                                            >{product.bookedBy}</span
+                                        >
+                                    </div>
+
+                                    <div class="pedCol">
+                                        <span class="pcText">In:</span>
+                                        <span class="pcVal">{product.from}</span
+                                        >
+                                    </div>
+
+                                    <div class="pedCol">
+                                        <span class="pcText">Date:</span>
+                                        <span class="pcVal"
+                                            >{formatDate(
+                                                product.bookedOn
+                                            )}</span
+                                        >
+                                    </div>
+                                </div>
+                            {/if}
+
+                            <!-- booked -->
+                            <!-- some det booked by : booked on-->
+
+                            <!-- some det pushed by : pushed on-->
+                            <!-- pushed -->
+                            {#if product.pushed}
+                                <div class="productDetailColTitle">Pushed</div>
+                                <div class="productDetailCol">
+                                    <div class="pedCol">
+                                        <span class="pcText">From:</span>
+                                        <span class="pcVal"
+                                            >{product.pushedFrom}</span
+                                        >
+                                    </div>
+
+                                    <div class="pedCol">
+                                        <span class="pcText"> Date:</span>
+                                        <span class="pcVal"
+                                            >{formatDate(product.addedOn)}</span
+                                        >
+                                    </div>
+
+                                    <div class="pedCol">
+                                        <span class="pcText"> Init Added:</span>
+                                        <span class="pcVal">
+                                            {formatDate(
+                                                product.initAddedOn
+                                            )}</span
+                                        >
+                                    </div>
+                                </div>
+                            {/if}
+
+                            <!-- pushed -->
+                            <!-- some det pushed from : dat on-->
                         {/if}
 
-                        <!-- pushed -->
-                        <!-- some det pushed from : dat on-->
-                    {/if}
-
-                    <br />
-                    <!--  -->
-                    <div class="productStatsCol">
-                        <LeftIconStatWidgets stats={productStats} />
+                        <br />
+                        <!--  -->
+                        <div class="productStatsCol">
+                            <LeftIconStatWidgets stats={productStats} />
+                        </div>
+                        <br />
+                        <div class="productsActionsCol">
+                            <ProductActions
+                                {product}
+                                on:update={() => {
+                                    getProduct($location);
+                                }}
+                            />
+                        </div>
                     </div>
-                    <br />
-                    <div class="productsActionsCol">
-                        <ProductActions />
+                </div>
+                <br />
+
+                <div class="productExtrasContainer">
+                    <div class="peTitleCol">
+                        <div class="peTitle active">Transaction History</div>
+                        <div class="peTitle">Performance</div>
+                    </div>
+
+                    <div class="peContentCol">
+                        <TransactionHistory
+                            packSize={product.packSize}
+                            transactions={product.transactions}
+                        />
                     </div>
                 </div>
-            </div>
-            <br />
-
-            <div class="productExtrasContainer">
-                <div class="peTitleCol">
-                    <div class="peTitle active">Transaction History</div>
-                    <div class="peTitle">Performance</div>
-                </div>
-
-                <div class="peContentCol">
-                    <TransactionHistory
-                        packSize={product.packSize}
-                        transactions={product.transactions}
-                    />
-                </div>
-            </div>
+            {/if}
         </div>
     </div>
 </main>
@@ -361,6 +384,7 @@
 <style>
     .content {
         background: #fff;
+        margin-bottom: 3em;
     }
 
     .titleBar {

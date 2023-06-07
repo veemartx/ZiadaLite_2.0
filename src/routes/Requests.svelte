@@ -1,7 +1,7 @@
 <script>
     import { Route, Router } from "svelte-navigator";
-    import Home from "../components/reports/Home.svelte";
-    import AdminGenReports from "../components/reports/AdminGenReports.svelte";
+    import Home from "../components/requests/Home.svelte";
+    import Request from "../components/requests/Request.svelte";
 </script>
 
 <main>
@@ -9,8 +9,9 @@
         <Route path="/*">
             <Home />
         </Route>
-        <Route path="/admin-gen-reports">
-            <AdminGenReports />
+
+        <Route path="/tr/*">
+            <Request />
         </Route>
     </Router>
 </main>

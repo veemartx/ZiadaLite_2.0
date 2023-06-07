@@ -125,9 +125,10 @@ button:focus-visible {
 }
 
 .title {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 16px;
   padding-top: .5em;
+  color: var(--ziada-green);
 }
 
 
@@ -242,6 +243,12 @@ input:focus {
 
 textarea:focus {
   outline: 1px solid var(--info-info);
+}
+
+.labelDesc {
+  color: crimson;
+  font-style: italic;
+  font-size: smaller;
 }
 
 

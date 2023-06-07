@@ -44,7 +44,7 @@
 
     const RESOURCE = "products";
 
-    const ACTION = "delete";
+    const ACTION = "create";
 
     const AUTH_CANCEL_MESSAGE =
         "Addition Authentication Cannot Be Cancelled. Returning";

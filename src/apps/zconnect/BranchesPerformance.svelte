@@ -184,13 +184,13 @@
                                     <td>
                                         {#if selectedMonth}
                                             <Link
-                                                to={`/ziada-core/performance/br/?branch=${p.branch}&month=${selectedMonth}`}
+                                                to={`br/?branch=${p.branch}&month=${selectedMonth}`}
                                             >
                                                 <i class="eye icon" /> View
                                             </Link>
                                         {:else}
                                             <Link
-                                                to={`/ziada-core/performance/br/?branch=${p.branch}&month=${currentMonth}`}
+                                                to={`br/?branch=${p.branch}&month=${currentMonth}`}
                                             >
                                                 <i class="eye icon" /> View
                                             </Link>

@@ -1,13 +1,18 @@
 <script>
     // @ts-nocheck
-    import { createEventDispatcher, onMount } from "svelte";
-    import { Notify } from "notiflix/build/notiflix-notify-aio";
+    import { onMount } from "svelte";
     import axios from "axios";
     import { apiBaseUrl } from "../config/config";
     import { db } from "../db/db";
     import { Dexie } from "dexie";
+    import {
+        getLiuDetails,
+        updateLocalUsersStore,
+    } from "../scripts/js/methods";
 
     let systemInitCurrentStep = 1;
+
+    let liu = getLiuDetails();
 
     // current action is always the last action in the array
     let systemInitProgress = [
@@ -61,6 +66,14 @@
 
         {
             step: 7,
+            name: "Downloading Messages",
+            color: "#34b7eb",
+            weight: 400,
+            progress: "pending",
+        },
+
+        {
+            step: 8,
             name: "Finishing Up",
             color: "#1bb568",
             weight: 400,
@@ -155,6 +168,9 @@
                     })
                     .then((lastKey) => {
                         console.log("Done Creating Local DB Store - Users");
+
+                        // update users store
+                        updateLocalUsersStore(newUsers);
 
                         systemInitProgress[3].progress = "done";
                         systemInitCurrentStep = 5;
@@ -255,7 +271,7 @@
                         setTimeout(() => {
                             systemInitProgress[5].progress = "done";
                             systemInitCurrentStep = 7;
-                            finishSystemInit();
+                            getLocalDBStoreMessages();
                         }, 1000);
                     })
                     .catch(Dexie.BulkError, (e) => {
@@ -266,6 +282,58 @@
                                 100000 -
                                 e.failures.length +
                                 " Settings was added successfully"
+                        );
+                    });
+            } catch (err) {
+                console.log(err);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    // get messages
+    const getLocalDBStoreMessages = async () => {
+        try {
+            let response = await axios({
+                method: "POST",
+                url: `${apiBaseUrl}getLocalDBStoreMessages.php`,
+                data: { target: liu.b },
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            });
+            let result = response.data;
+
+            let newMessages = result;
+            // clear the rocords in the db
+            try {
+                // delete the old products list
+                await db.messages.clear();
+                let newMessagesKeys = newMessages.map((m) => m.id);
+                // add the new list
+                // console.log(newProductList);
+                db.messages
+                    .bulkPut(newMessages, newMessagesKeys, {
+                        allKeys: true,
+                    })
+                    .then((lastKey) => {
+                        console.log("Done Creating Local DB Store - Messages");
+
+                        setTimeout(() => {
+                            systemInitProgress[6].progress = "done";
+                            systemInitCurrentStep = 8;
+                            finishSystemInit();
+                        }, 1000);
+                    })
+                    .catch(Dexie.BulkError, (e) => {
+                        // Explicitely catching the bulkAdd() operation makes those successful
+                        // additions commit despite that there were errors.
+                        console.error(
+                            "Some Operations did not succeed. However, " +
+                                100000 -
+                                e.failures.length +
+                                " Messages were added successfully"
                         );
                     });
             } catch (err) {

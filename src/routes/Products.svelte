@@ -5,6 +5,7 @@
     import RecoverAdditions from "../components/products/RecoverAdditions.svelte";
     import Create from "../components/products/Create.svelte";
     import ProductsList from "../components/products/ProductsList.svelte";
+    import ApprovedAdditions from "../components/products/ApprovedAdditions.svelte";
 </script>
 
 <main>
@@ -27,6 +28,10 @@
 
         <Route path="/recover">
             <RecoverAdditions />
+        </Route>
+
+        <Route path="/approved-additions">
+            <ApprovedAdditions />
         </Route>
     </Router>
 </main>
