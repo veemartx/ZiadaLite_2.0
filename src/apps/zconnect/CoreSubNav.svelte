@@ -46,6 +46,7 @@
         display: flex;
         border-bottom: 1px solid rgba(128, 128, 128, 0.169);
         padding-bottom: 0.5em;
+        flex-wrap: wrap;
     }
 
     .navcol {
@@ -56,7 +57,16 @@
         font-weight: 500;
         color: purple;
         background: rgba(255, 0, 0, 0.04);
-        padding-inline: 0.5em;
+        padding-inline: 1em;
+        padding-top: 0.2em;
+        padding-bottom: 0.2em;
+        border: 1px solid purple;
+        border-radius: 3px;
+    }
+
+    .nav:hover {
+        background: rgba(255, 0, 144, 0.14);
+        transition: 200ms;
     }
 
     .active {

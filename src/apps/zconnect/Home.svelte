@@ -4,6 +4,7 @@
     import ZiadaCoreNav from "./ZiadaCoreNav.svelte";
     import ZiadaCoreSearch from "./ZiadaCoreSearch.svelte";
     import ZiadaCoreHome from "./ZiadaCoreHome.svelte";
+    import ZiadaCoreSettings from "./settings/Home.svelte";
     import Products from "./Products.svelte";
     import Sales from "./Sales.svelte";
     import Performance from "./Performance.svelte";
@@ -61,13 +62,14 @@
                                 <Sales bind:crumbs />
                             </Route>
 
+                            <Route path="/settings/*">
+                                <ZiadaCoreSettings bind:crumbs />
+                            </Route>
+
                             <Route path="/performance/*">
                                 <Performance bind:crumbs />
                             </Route>
                         </Router>
-                    </div>
-                    <div class="mobileHome">
-                        <InventoryTreeChart />
                     </div>
                 </div>
             </div>
@@ -98,10 +100,6 @@
         border-bottom: 1px solid rgba(94, 94, 94, 0.391);
     }
 
-    .mobileHome {
-        background: #fff;
-    }
-
     @media only screen and (min-width: 640px) {
         .mobileSettingsSearch {
             display: none;
@@ -114,10 +112,6 @@
         .rightCol {
             flex: 4;
             margin-left: 0.2em;
-        }
-
-        .mobileHome {
-            display: none;
         }
     }
 </style>

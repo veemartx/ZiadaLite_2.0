@@ -7,7 +7,7 @@
     import TitleActions from "../../widgets/TitleActions.svelte";
 
     let crumbs = {
-        title: "Reports",
+        title: "Random Stock Takes",
         crumbs: [
             {
                 name: "Home",
@@ -16,6 +16,10 @@
             {
                 name: "Reports",
                 url: "/reports/",
+            },
+            {
+                name: "Random Stock Takes",
+                url: "/reports/random-stock-takes",
             },
         ],
     };
@@ -47,8 +51,15 @@
         <div class="content">
             <div class="productsMainContainer">
                 <div class="titleBar">
-                    <div class="title">Reports</div>
+                    <div class="title">Random Stock Take</div>
                     <div class="actions">
+                        <div class="bt">
+                            <Link to="/reports/random-stock-take/create">
+                                <button class="ui mini purple icon button">
+                                    <i class="plus icon" /> Create
+                                </button>
+                            </Link>
+                        </div>
                         <div class="bt">
                             <TitleActions
                                 title={actionsTitle}

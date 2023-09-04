@@ -1,29 +1,73 @@
 <script>
     import { onMount } from "svelte";
     import { Link } from "svelte-navigator";
-    import { goBack } from "../../scripts/js/methods";
-    import Uploads from "./system/Uploads.svelte";
+    import { goBack } from "../../../scripts/js/methods";
+    import axios from "axios";
+    import { apiBaseUrl } from "../../../config/config";
 
     export let crumbs;
 
+    let sales = [];
+
+    let currentPage = 1;
+
+    let totalNumberOfPages = 1;
+
+    let pages = [];
+
+    let offset;
+
+    let pageSize = 21;
+
+    let currentPageSales = [];
+
+    $: {
+        offset = (currentPage - 1) * pageSize;
+
+        currentPageSales = sales.slice(offset, offset + pageSize);
+    }
+
+    // make pages
+    $: {
+        if (sales.length > 0) {
+            totalNumberOfPages = sales.length / pageSize + 1;
+
+            for (let x = 1; x <= totalNumberOfPages; x++) {
+                pages.push(x);
+            }
+
+            pages = pages;
+        }
+    }
+
+    const getSales = async () => {
+        let response = await axios.get(`${apiBaseUrl}core/getSales.php`);
+
+        let result = response.data;
+
+        // sales = result;
+    };
+
     onMount(() => {
         crumbs = {
-            title: "System Settings",
+            title: "Core Sales",
             crumbs: [
                 {
                     name: "Home",
                     url: "/",
                 },
                 {
-                    name: "Settings",
-                    url: "/settings",
+                    name: "ZiadaCore",
+                    url: "/ziada-core",
                 },
                 {
-                    name: "System Settings",
-                    url: "/settings/system",
+                    name: "Core Sales",
+                    url: "/ziada-core/sales",
                 },
             ],
         };
+
+        getSales();
     });
 </script>
 
@@ -46,7 +90,7 @@
                     </div>
 
                     <div class="s-title">
-                        <i class="cog icon" /> System
+                        <i class="cog icon" /> Sales
                     </div>
                 </div>
                 <div class="actions">
@@ -55,11 +99,9 @@
             </div>
 
             <div class="mainContainer">
-                <!-- upload settings -->
-                <div class="uploads">
-                    <Uploads />
-                </div>
-                <!-- upload settings -->
+                <!-- product settings -->
+                <div class="stockTakeSettings">Stock Take Settings</div>
+                <!-- product settings -->
             </div>
         </div>
     </div>

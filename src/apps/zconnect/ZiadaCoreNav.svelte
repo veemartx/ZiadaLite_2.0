@@ -45,6 +45,15 @@
                 </div>
             </Link>
 
+            <Link to="/apps/zconnect/settings">
+                <div class="navCol">
+                    <div class="navIcon">
+                        <i class="ri-settings-2-line" />
+                    </div>
+                    <div class="navText">Settings</div>
+                </div>
+            </Link>
+
             <Link to="/apps/zconnect/">
                 <div class="navCol">
                     <div class="navIcon">

@@ -36,8 +36,8 @@
                     type: "treemap",
                 },
                 title: {
-                    text: "ZiadaCore Inventory Distribution Overview",
-                    align: "center",
+                    text: "Inventory Distribution Overview",
+                    align: "left",
                 },
                 colors: [
                     "#3B93A5",

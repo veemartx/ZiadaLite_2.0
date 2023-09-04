@@ -35,6 +35,29 @@
 
     let availablePieces;
 
+    //
+    let totalAvailableUnits;
+
+    // total request units
+    // make sure this number is less than the  other number
+    let totalRequestUnits;
+
+    // these control wholes and pieces being requested
+    let maxWholesAvailableToRequest = 0;
+
+    let maxPiecesAvailableToRequest = 0;
+
+    $: {
+        if (product) {
+            updateRequestUnits(
+                qtyW,
+                qtyP,
+                product.packSize,
+                product.piecesInStock
+            );
+        }
+    }
+
     let liu;
 
     let messageOptions = {
@@ -48,6 +71,8 @@
         // console.log(liu);
     }
 
+    // listen for qty changes
+
     // methods
 
     const dispatch = createEventDispatcher();
@@ -60,11 +85,35 @@
         dispatch("success");
     };
 
+    const updateRequestUnits = (qtyW, qtyP, packSize, totalAvailableUnits) => {
+        let wholes = qtyW ? qtyW : 0;
+
+        let pieces = qtyP ? qtyP : 0;
+
+        totalRequestUnits = wholes * packSize + pieces;
+
+        let remainingRequestableUnits = totalAvailableUnits - totalRequestUnits;
+
+        maxWholesAvailableToRequest = Math.floor(
+            remainingRequestableUnits / packSize
+        );
+
+        maxPiecesAvailableToRequest = remainingRequestableUnits;
+    };
+
     const handleProductRequest = async () => {
+        // qty checks
+
+        if (!qtyW && !qtyP) {
+            Notify.failure("Request Quantity Cannot Be Empty");
+
+            return;
+        }
+
         let dt = {
             productName: productName,
-            productType:product.type,
-            expiryDate:product.expiryDate,
+            productType: product.type,
+            expiryDate: product.expiryDate,
             init: authenticatedUser.uid,
             initName: authenticatedUser.name,
             productId: product.id,
@@ -78,7 +127,7 @@
             requestId: v4(),
             recipient: product.branch,
             sender: authenticatedUser.uid,
-            options: JSON.stringify(messageOptions),
+            options: messageOptions,
         };
 
         requestBtnLoading = true;
@@ -119,7 +168,9 @@
 
         availablePieces = product.piecesInStock % product.packSize;
 
-        console.log(authenticatedUser)
+        totalAvailableUnits = product.piecesInStock;
+
+        // console.log(authenticatedUser);
     });
 </script>
 
@@ -155,8 +206,27 @@
                             <span class="pdc"> Available Qty:</span>
                             {availableWholes}W {availablePieces}P
                         </div>
+
+                        <div class="maxRequestQty">
+                            <span class="pdc">
+                                Max Requestable Units (W/P):</span
+                            >
+                            {maxWholesAvailableToRequest}W
+                            {#if product.packSize != 1}
+                                {maxPiecesAvailableToRequest}P
+                            {/if}
+                        </div>
                     </div>
                 </div>
+
+                {#if totalRequestUnits > totalAvailableUnits}
+                    <div class="qtyMessage">
+                        <div class="message">
+                            Cannot Request More Than Currently In Stock
+                        </div>
+                    </div>
+                {/if}
+
                 <div class="contentBar">
                     <form
                         class="ui form"
@@ -171,8 +241,7 @@
                                     id="qtyw"
                                     placeholder="Qty W"
                                     bind:value={qtyW}
-                                    max={availableWholes}
-                                    required
+                                    max={maxWholesAvailableToRequest}
                                 />
                             </div>
 
@@ -186,8 +255,7 @@
                                         style="height:2em"
                                         placeholder="Qty P"
                                         bind:value={qtyP}
-                                        max={availablePieces}
-                                        required
+                                        max={maxPiecesAvailableToRequest}
                                     />
                                 </div>
                             {/if}
@@ -196,13 +264,15 @@
                             class="field"
                             style="text-align: center;padding-top:1em"
                         >
-                            <button
-                                class={requestBtnLoading
-                                    ? "ui basic purple loading button"
-                                    : "ui basic purple button"}
-                            >
-                                <i class="send icon" /> Request
-                            </button>
+                            {#if totalRequestUnits <= totalAvailableUnits}
+                                <button
+                                    class={requestBtnLoading
+                                        ? "ui basic purple loading button"
+                                        : "ui basic purple button"}
+                                >
+                                    <i class="send icon" /> Request
+                                </button>
+                            {/if}
                         </div>
                     </form>
                 </div>
@@ -278,6 +348,20 @@
 
     .pdc {
         color: black;
+    }
+
+    .maxRequestQty {
+        color: crimson;
+        padding-left: 1em;
+    }
+
+    .message {
+        color: crimson;
+        background: rgba(255, 0, 0, 0.119);
+        padding: 1em;
+        border: 1px solid crimson;
+        border-radius: 5px;
+        margin: 1em;
     }
     @media only screen and (min-width: 640px) {
         .segment {

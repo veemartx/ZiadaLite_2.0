@@ -1,7 +1,6 @@
 <script>
     import { Route, Router } from "svelte-navigator";
     import Settings from "../components/settings/Settings.svelte";
-    import New from "../components/products/New.svelte";
 </script>
 
 <main>

@@ -138,6 +138,7 @@ button:focus-visible {
   padding: 1em;
   overflow-x: auto;
   margin: auto;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
 }
 
 select {

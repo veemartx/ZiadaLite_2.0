@@ -114,3 +114,17 @@ Sample Settings
 
 1. Update  Access-Control-Allow-Origin in htaccess
 2. Update apiBase Url
+
+For branch specific actions bundle them in branch specific apps/locations ege
+
+branch/
+      meetings
+      memos
+      Duty Roster
+
+on the contrary make a branch app from where all these branch specific apps can be accessed
+
+<!-- on authentication -->
+As highlighted earlier , authenticate o final action submission
+
+find a way to have a method that receives a token, and resource and it returns an answer, and message

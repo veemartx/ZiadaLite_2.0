@@ -31,6 +31,7 @@ Chanels-> Messanger. To be shown in chat
         -> universal. To be shown in universal message bar
         -> Notification. Only Appear On Notification Panel
         -> System. Silent Only Sent to the system
+        -> Delivery (These are sent to update the other message statuses)
 
 Priority. A number between 0-5. Describing the urgency
 Target - The Target Branch,/ user, region etc

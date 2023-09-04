@@ -1,7 +1,7 @@
 <script>
     import axios from "axios";
-    import { Link, useLocation } from "svelte-navigator";
-    import { apiBaseUrl } from "../config/config";
+    import { Link, navigate, useLocation } from "svelte-navigator";
+    import { apiBaseUrl } from "../../../config/config";
     import { createEventDispatcher } from "svelte";
 
     const location = useLocation();
@@ -28,7 +28,7 @@
         dispatch("product", product);
 
         q = "";
-        
+
         hideSearchResults($location);
     };
 
@@ -54,7 +54,7 @@
             const response = await axios({
                 method: "POST",
                 data: dt,
-                url: `${apiBaseUrl}searchList.php`,
+                url: `${apiBaseUrl}searchNsProducts.php`,
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
@@ -107,23 +107,18 @@
                         </div>
 
                         {#each results as rs}
-                            <!-- svelte-ignore a11y-click-events-have-key-events -->
-                            <div
-                                class="rsCol"
-                                on:click={() => {
-                                    sendSearchResults(rs);
-                                }}
-                            >
-                                <div class="rsName">{rs.name}</div>
-                                <div class="rsCode">{rs.code}</div>
-                                <div class="rsPackSize">{rs.packSize}</div>
-                            </div>
+                            <Link to={`../ns-product/edit/${rs.id}`}>
+                                <div class="rsCol">
+                                    <div class="rsName">{rs.name}</div>
+                                    <div class="rsCode">{rs.code}</div>
+                                    <div class="rsPackSize">{rs.packSize}</div>
+                                </div>
+                            </Link>
                         {/each}
                     </div>
                 </div>
             </div>
         {/if}
-
         <!-- results -->
     </div>
 </main>
@@ -145,7 +140,7 @@
 
     .resultsContainer {
         padding-top: 0.5em;
-        position: absolute;
+        /* position: absolute; */
         display: flex;
         justify-content: center;
         width: 100vw;
@@ -210,7 +205,6 @@
     }
 
     @media only screen and (min-width: 640px) {
-
         /* remember to sor the width issue */
         .resultsContainer {
             padding-top: 0.6em;

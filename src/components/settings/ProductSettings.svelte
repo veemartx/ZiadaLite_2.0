@@ -1,7 +1,20 @@
 <script>
     import { onMount } from "svelte";
-    import { Link } from "svelte-navigator";
+    import { Link, Route, Router } from "svelte-navigator";
     import { goBack } from "../../scripts/js/methods";
+    import ProductsSettings from "./products/Home.svelte";
+    import Categories from "./products/Categories.svelte";
+    import Subcategories from "./products/Subcategories.svelte";
+    import SettingsNav from "./products/SettingsNav.svelte";
+    import Category from "./products/Category.svelte";
+    import Properties from "./products/Properties.svelte";
+    import Create from "./products/Create.svelte";
+    import NsProducts from "./products/NsProducts.svelte";
+    import NsProduct from "./products/NsProduct.svelte";
+    import Generics from "./products/Generics.svelte";
+    import NsBrands from "./products/NsBrands.svelte";
+    import NsManufacturers from "./products/NsManufacturers.svelte";
+    import EditNsProduct from "./products/EditNsProduct.svelte";
 
     export let crumbs;
 
@@ -24,6 +37,15 @@
             ],
         };
     });
+
+    let settingsNavLinks = [
+        "categories",
+        "create",
+        "ns-products",
+        "generics",
+        "brands",
+        "manufacturers",
+    ];
 </script>
 
 <main>
@@ -53,7 +75,64 @@
                 </div>
             </div>
 
-            <div class="mainContainer">Product Settings</div>
+            <!-- .product settings nav  -->
+            <div class="productSettingsNav">
+                <SettingsNav links={settingsNavLinks} />
+            </div>
+            <!-- .product settings nav  -->
+
+            <div class="mainContainer">
+                <Router>
+                    <Route path="/">
+                        <ProductsSettings />
+                    </Route>
+                    <Route path="/categories/*">
+                        <Categories />
+                    </Route>
+
+                    <Route path="/subcategories">
+                        <Subcategories />
+                    </Route>
+
+                    <Route path="/category/*">
+                        <Category />
+                    </Route>
+
+                    <Route path="/properties/*">
+                        <Properties />
+                    </Route>
+
+                    <Route path="/create/*">
+                        <Create />
+                    </Route>
+
+                    <Route path="/ns-products/*">
+                        <NsProducts />
+                    </Route>
+
+                    <Route path="/ns-product/*">
+                        <Route path="/pd/*">
+                            <NsProduct />
+                        </Route>
+
+                        <Route path="/edit/*">
+                            <EditNsProduct />
+                        </Route>
+                    </Route>
+
+                    <Route path="/generics/*">
+                        <Generics />
+                    </Route>
+
+                    <Route path="/brands/*">
+                        <NsBrands />
+                    </Route>
+
+                    <Route path="/manufacturers/*">
+                        <NsManufacturers />
+                    </Route>
+                </Router>
+            </div>
         </div>
     </div>
 </main>

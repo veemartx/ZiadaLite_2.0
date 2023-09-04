@@ -156,7 +156,6 @@
         on:cancel={cancelAuthentication}
     />
 {/if}
-
 <!-- auth token modal  -->
 
 <!-- adjust modal -->

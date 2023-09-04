@@ -9,7 +9,6 @@
     import { Link } from "svelte-navigator";
     import dayjs from "dayjs";
     import BranchesPerformarceChart from "./BranchesPerformanceChart.svelte";
-  
 
     let startDate;
 
@@ -19,14 +18,14 @@
 
     let monthNo = dayjs().month() + 1;
 
-    let currentMonth;
+    let currentMonth = "2023-04";
 
     // current month
-    if (monthNo < 10) {
-        currentMonth = dayjs().year() + "-" + "0" + monthNo;
-    } else {
-        currentMonth = dayjs().year() + "-" + monthNo;
-    }
+    // if (monthNo < 10) {
+    //     currentMonth = dayjs().year() + "-" + "0" + monthNo;
+    // } else {
+    //     currentMonth = dayjs().year() + "-" + monthNo;
+    // }
 
     let branchPerformanceLoading = true;
 
@@ -38,7 +37,7 @@
 
     let totalMargin = 0;
 
-    let selectedMonth;
+    let selectedMonth = "2023-04";
 
     $: {
         if (selectedMonth) {

@@ -1,7 +1,7 @@
 <script>
     import axios from "axios";
     import { Link, useLocation } from "svelte-navigator";
-    import { apiBaseUrl } from "../config/config";
+    import { apiBaseUrl } from "../../../config/config";
     import { createEventDispatcher } from "svelte";
 
     const location = useLocation();
@@ -28,7 +28,7 @@
         dispatch("product", product);
 
         q = "";
-        
+
         hideSearchResults($location);
     };
 
@@ -54,7 +54,7 @@
             const response = await axios({
                 method: "POST",
                 data: dt,
-                url: `${apiBaseUrl}searchList.php`,
+                url: `${apiBaseUrl}searchNsProductList.php`,
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
@@ -123,7 +123,6 @@
                 </div>
             </div>
         {/if}
-
         <!-- results -->
     </div>
 </main>
@@ -210,7 +209,6 @@
     }
 
     @media only screen and (min-width: 640px) {
-
         /* remember to sor the width issue */
         .resultsContainer {
             padding-top: 0.6em;

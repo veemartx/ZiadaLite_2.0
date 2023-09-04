@@ -20,15 +20,15 @@
             crumbs: [
                 {
                     name: "Home",
-                    url: "/",
+                    url: "/apps",
                 },
                 {
                     name: "ZiadaCore",
-                    url: "/ziada-core",
+                    url: "/apps/ziadacore",
                 },
                 {
                     name: "Products",
-                    url: "/ziada-core/products",
+                    url: "/apps/ziadacore/products",
                 },
             ],
         };

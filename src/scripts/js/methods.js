@@ -6,6 +6,8 @@ import { Crumbs } from "../../stores/crumbs-store";
 import { liveQuery } from "dexie";
 import { db } from "../../db/db";
 import { LocalUsers } from "../../stores/local_users_store";
+import axios from "axios";
+import { apiBaseUrl } from "../../config/config";
 
 
 dayjs.extend(customParseFormat)
@@ -393,3 +395,15 @@ export const updateLocalUsersStore = (users) => {
 }
 
 
+// return  an array wit uniq
+export const removeDuplicates = (arr) => {
+    return Array.from(new Set(arr));
+}
+
+// get company branches
+export const getBranches = async () => {
+
+    let response = await axios.get(`${apiBaseUrl}getBranches.php`);
+
+    return response.data;
+}

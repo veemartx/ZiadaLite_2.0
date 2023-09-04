@@ -82,6 +82,8 @@
     ];
 
     // for modularity get the data in different requests
+    // you could just chain these dummy ;(
+    // actually always load them offline first then update after login
     const startSystemInit = () => {
         // wait two seconds and get the data
 

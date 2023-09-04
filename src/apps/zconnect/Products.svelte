@@ -9,6 +9,7 @@
     import Home from "./products/Home.svelte";
     import BranchProducts from "./products/BranchProducts.svelte";
     import MissingProducts from "./products/MissingProducts.svelte";
+    import StockTakes from "./stock_takes/StockTakes.svelte";
 
     export let crumbs;
 
@@ -49,21 +50,27 @@
     let coreNav = [
         {
             name: "Home",
-            url: "/ziada-core/products/",
+            url: "/apps/zconnect/products/",
             entityName: "products",
             icon: "home icon",
         },
         {
             name: "Missing",
-            url: "/ziada-core/products/missing",
+            url: "/apps/zconnect/products/missing",
             entityName: "missing",
             icon: "x icon",
         },
         {
             name: "Not Sold",
-            url: "/ziada-core/products/not-sold",
+            url: "/apps/zconnect/products/not-sold",
             entityName: "not-sold",
             icon: "square icon",
+        },
+        {
+            name: "Stock Takes",
+            url: "/apps/zconnect/products/stock-takes",
+            entityName: "stock-takes",
+            icon: "edit icon",
         },
     ];
 
@@ -179,6 +186,10 @@
 
                     <Route path="/missing/*">
                         <MissingProducts />
+                    </Route>
+
+                    <Route path="/stock-takes/*">
+                        <StockTakes />
                     </Route>
 
                     <Route path="/br/*">

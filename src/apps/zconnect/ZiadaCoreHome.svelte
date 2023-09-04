@@ -8,7 +8,7 @@
         <div class="mobileSettingsNavBar">
             <ZiadaCoreNav />
         </div>
-        <div class="computerComputerHome">
+        <div class="mainContainer">
             <div class="titleBar">
                 <div class="title">ZiadaConnect</div>
             </div>
@@ -21,17 +21,13 @@
 </main>
 
 <style>
-    .computerComputerHome {
-        display: none;
+    .mainContainer {
+        display: block;
+        padding: 1em;
     }
     @media only screen and (min-width: 640px) {
         .mobileSettingsNavBar {
             display: none;
-        }
-
-        .computerComputerHome {
-            display: block;
-            padding: 1em;
         }
     }
 </style>
