@@ -8,6 +8,7 @@
 
     import MarketingIcon from "../assets/icons/marketing.png";
     import DeliverIcon from "../assets/icons/deliver.png";
+    import CommunicationsIcon from "../assets/icons/communications.png";
 
     import { Link } from "svelte-navigator";
 </script>
@@ -42,7 +43,7 @@
                         <div class="appIcon">
                             <img src={TasksIcon} alt="tasks icon" />
                         </div>
-                        <div class="appName">ZTasks <sup>&trade;</sup></div>
+                        <div class="appName">Tasks</div>
                     </Link>
                 </div>
 
@@ -74,11 +75,23 @@
                 </div>
 
                 <div class="appPanel">
+                    <Link to="/apps/communications">
+                        <div class="appIcon">
+                            <img
+                                src={CommunicationsIcon}
+                                alt="communications icon"
+                            />
+                        </div>
+                        <div class="appName">Communication</div>
+                    </Link>
+                </div>
+
+                <div class="appPanel">
                     <Link to="/apps/zdeliver">
                         <div class="appIcon">
                             <img src={DeliverIcon} alt="deliver icon" />
                         </div>
-                        <div class="appName">ZDeliver <sup>&trade;</sup></div>
+                        <div class="appName">Deliveries</div>
                     </Link>
                 </div>
 
@@ -87,7 +100,7 @@
                         <div class="appIcon">
                             <img src={MarketingIcon} alt="network icon" />
                         </div>
-                        <div class="appName">ZNetwork <sup>&trade;</sup></div>
+                        <div class="appName">Marketing</div>
                     </Link>
                 </div>
             </div>

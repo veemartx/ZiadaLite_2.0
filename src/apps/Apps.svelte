@@ -12,6 +12,7 @@
     import { updateCrumbs } from "../scripts/js/methods";
     import ZiadaDeliver from "./zdeliver/Home.svelte";
     import ZiadaNetwork from "./znetwork/Home.svelte";
+    import Communications from "./communications/Home.svelte";
 
     let crumbs = {
         title: "Apps",
@@ -70,6 +71,10 @@
 
                     <Route path="/zdeliver/*">
                         <ZiadaDeliver />
+                    </Route>
+
+                    <Route path="/communications/*">
+                        <Communications />
                     </Route>
                 </Router>
             </div>

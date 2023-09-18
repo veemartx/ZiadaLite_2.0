@@ -18,12 +18,22 @@
                 </div>
             </Link>
 
-            <Link to="/settings/products">
+            <!-- hidden till further notice -->
+            <!-- <Link to="/settings/products">
                 <div class="navCol">
                     <div class="navIcon">
                         <i class="ri-medicine-bottle-line" />
                     </div>
                     <div class="navText">Products</div>
+                </div>
+            </Link> -->
+
+            <Link to="/settings/inventory">
+                <div class="navCol">
+                    <div class="navIcon">
+                        <i class="ri-medicine-bottle-line" />
+                    </div>
+                    <div class="navText">Inventory</div>
                 </div>
             </Link>
 
