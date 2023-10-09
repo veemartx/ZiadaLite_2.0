@@ -27,7 +27,7 @@
     }
 
     function cancelAuth() {
-        Notify.warning(cancelMessage, {
+        Notify.warning(cancelMessage ?? "Operation Cancelled By User", {
             ID: "MKA",
             timeout: 4000,
             showOnlyTheLastOne: true,

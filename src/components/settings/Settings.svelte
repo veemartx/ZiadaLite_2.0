@@ -13,6 +13,8 @@
     import SettingsNav from "./SettingsNav.svelte";
     import SettingsSearch from "./SettingsSearch.svelte";
     import SystemSettings from "./SystemSettings.svelte";
+    import Inventory from "./inventory/Home.svelte";
+
 
     let crumbs = {
         title: "Settings",
@@ -86,6 +88,10 @@
 
                             <Route path="/company/*">
                                 <Company bind:crumbs />
+                            </Route>
+
+                            <Route path="/inventory/*">
+                                <Inventory bind:crumbs />
                             </Route>
                         </Router>
                     </div>
