@@ -103,7 +103,8 @@
                         <div class="rsCol">
                             <div class="rsName">Name</div>
                             <div class="rsCode">Code</div>
-                            <!-- <div class="rsPackSize">Pack Size</div> -->
+                            <div class="rsPackSize">Batch Managed</div>
+                            <div class="rsPackSize">Sales Uom</div>
                         </div>
 
                         {#each results as rs}
@@ -116,7 +117,8 @@
                             >
                                 <div class="rsName">{rs.name}</div>
                                 <div class="rsCode">{rs.code}</div>
-                                <!-- <div class="rsPackSize">{rs.packSize}</div> -->
+                                <div class="rsPackSize">{rs.batch_managed}</div>
+                                <div class="rsPackSize">{rs.sales_uom}</div>
                             </div>
                         {/each}
                     </div>

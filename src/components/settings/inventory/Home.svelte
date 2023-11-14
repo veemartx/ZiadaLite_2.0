@@ -1,4 +1,6 @@
 <script>
+    // @ts-nocheck
+
     import axios from "axios";
     import AddProduct from "./AddProduct.svelte";
     import InventorySearch from "./InventorySearch.svelte";
@@ -8,71 +10,376 @@
     import dayjs from "dayjs";
     import { getBranches, getLiuDetails } from "../../../scripts/js/methods";
     import { async } from "pdfmake/build/pdfmake";
+    import { Link, Route, Router } from "svelte-navigator";
+    import TakeTwo from "./TakeTwo.svelte";
+    import { Notify } from "notiflix";
+    import AuthToken from "../../AuthToken.svelte";
+    import { AUTH_ERROR_MESSAGE } from "../../../scripts/js/messages";
+    import { liveQuery } from "dexie";
+    import { db } from "../../../db/db";
+    import { getPermittedTokens } from "../../../scripts/js/methods";
+    import EditProduct from "./EditProduct.svelte";
+    import AccessTokens from "./AccessTokens.svelte";
 
     export let crumbs;
 
+    Notify.init({
+        ID: "MKA",
+        timeout: 4000,
+        showOnlyTheLastOne: true,
+        cssAnimationStyle: "from-bottom",
+        zindex: 1000000000,
+    });
+
+    let shelves = [];
+
+    let showAuthToken = true;
+
     let showAddProducts = false;
 
+    let showEditProduct = false;
+
+    let showTakeTwo = false;
+
+    let exportExcelBtnLoading = false;
+
+    let exportExcelBtnRawLoading = false;
+
+    let takeTwoBtnLoading = false;
+
+    let archiveStockTakeBtnLoading = false;
+
     let searchProduct;
+
+    let editProduct;
+
+    let takeTwoShelf;
+
+    let refreshBranchesBtnLoading = false;
+
+    // auth
+    const RESOURCE = "products";
+
+    const ACTION = "add";
+
+    let authenticatedUser = {};
+
+    let authTokens = [];
+
+    let localDbStoreUsers = liveQuery(() => db.users.toArray());
+
+    let localDbStorePermissions = liveQuery(() => db.permissions.toArray());
+
+    $: {
+        if ($localDbStoreUsers && $localDbStorePermissions) {
+            // get allowed tokens
+            authTokens = getPermittedTokens(
+                RESOURCE,
+                ACTION,
+                $localDbStoreUsers,
+                $localDbStorePermissions
+            );
+        }
+    }
 
     let stats = {};
 
     let products = [];
 
+    let filtered_products = [];
+
+    let products_filter_query = "";
+
+    let takeTwoProducts = [];
+
     let filterBranches = [];
 
-    let filteredBranch = "All";
+    let filteredBranch;
 
-    let filteredProducts = [];
+    let varianceBtnLoading;
+
+    let varianceData;
 
     let liu = getLiuDetails();
 
     $: {
-        handleBranchesFilter(filteredBranch);
+        if (filteredBranch) {
+            getProducts(filteredBranch);
+        }
     }
 
-    const getStats = async () => {
-        let res = await axios.get(
-            `${apiBaseUrl}getNsProductStockExpiriesStats.php?host=${liu.b}`
-        );
-
-        stats = res.data;
-    };
-
-    const getProducts = async () => {
-        let res = await axios.get(`${apiBaseUrl}getNsProductStockExpiries.php`);
-
-        products = res.data;
-    };
-
-    const generateExcel = () => {
-        let timestamp = dayjs();
-        // console.log(inventory);
-        const ws = utils.json_to_sheet(filteredProducts);
-        const wb = utils.book_new();
-        utils.book_append_sheet(wb, ws, "Data");
-        writeFileXLSX(wb, `${filteredBranch}_NsProducts_${timestamp}.xlsx`);
-    };
-
-    const handleBranchesFilter = (filteredBranch) => {
-        if (filteredBranch == "All") {
-            filteredProducts = products;
+    $: {
+        if (products_filter_query.length > 0) {
+            handleProductFilter(products_filter_query);
         } else {
-            let fp = products.filter((p) => {
-                if (p.branch == filteredBranch) {
-                    return p;
-                }
+            filtered_products = products;
+        }
+    }
+
+    const getStats = async (branch) => {
+        let dt = {
+            branch: branch,
+            position: liu.p,
+        };
+
+        try {
+            const response = await axios({
+                method: "POST",
+                data: dt,
+                url: `${apiBaseUrl}getNsProductStockExpiriesStats.php`,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
             });
 
-            filteredProducts = fp;
+            const res = response.data;
 
-            filteredProducts = filteredProducts;
+            stats = res;
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const generateShelves = () => {
+        for (let index = 1; index < 51; index++) {
+            // const element = array[index];
+            let i;
+            if (index < 10) {
+                i = "0" + index;
+            } else {
+                i = index;
+            }
+
+            shelves.push(`SH-${i}`);
+            shelves = shelves;
+        }
+    };
+
+    const handleProductFilter = (query) => {
+        let filteredp = products.filter((p) => {
+            if (p.name.includes(query.toUpperCase())) {
+                return p;
+            }
+        });
+
+        filtered_products = filteredp;
+    };
+
+    const getProducts = async (branch) => {
+        let dt = {
+            branch: branch,
+            user: authenticatedUser.name,
+            position: authenticatedUser.position,
+        };
+        try {
+            const response = await axios({
+                method: "POST",
+                data: dt,
+                url: `${apiBaseUrl}getNsProductStockExpiries.php`,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            });
+
+            const res = response.data;
+
+            products = res;
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const generateExcel = async (type) => {
+        let fb = filteredBranch ? filteredBranch : "All";
+        let dt = {
+            branch: fb,
+            type: type,
+        };
+
+        if (type == "raw") {
+            exportExcelBtnRawLoading = true;
+        } else {
+            exportExcelBtnLoading = true;
+        }
+
+        try {
+            const response = await axios({
+                method: "POST",
+                data: dt,
+                url: `${apiBaseUrl}getNProductExcelStockExpiries.php`,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            });
+
+            const res = response.data;
+
+            if (type == "raw") {
+                exportExcelBtnRawLoading = false;
+            } else {
+                exportExcelBtnLoading = false;
+            }
+            let timestamp = dayjs();
+            // console.log(inventory);
+            const ws = utils.json_to_sheet(res);
+            const wb = utils.book_new();
+            utils.book_append_sheet(wb, ws, "Data");
+            writeFileXLSX(wb, `${fb}_NsProducts_${timestamp}.xlsx`);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const getTakeTwoProducts = async () => {
+        let dt = {
+            branch: liu.b,
+            shelf: takeTwoShelf,
+        };
+
+        takeTwoBtnLoading = true;
+        try {
+            const response = await axios({
+                method: "POST",
+                data: dt,
+                url: `${apiBaseUrl}getNsProductStockExpiriesTakeTwo.php`,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            });
+
+            const res = response.data;
+
+            takeTwoProducts = res;
+
+            takeTwoBtnLoading = false;
+
+            showTakeTwo = true;
+            // console.log(takeTwoProducts);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const getVariance = async () => {
+        let dt = {
+            branch: liu.b,
+        };
+
+        try {
+            varianceBtnLoading = true;
+
+            const response = await axios({
+                method: "POST",
+                data: dt,
+                url: `${apiBaseUrl}updateNsProductStockExpiry.php`,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            });
+
+            const res = response.data;
+
+            // console.log(res);
+            varianceData = res;
+
+            varianceBtnLoading = false;
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const refreshBranches = async () => {
+        // console.log("Refreshing Branches");
+
+        let dt = {
+            user: authenticatedUser.name,
+            position: authenticatedUser.position,
+        };
+
+        try {
+            refreshBranchesBtnLoading = true;
+
+            const response = await axios({
+                method: "POST",
+                data: dt,
+                url: `${apiBaseUrl}refreshNsProductsBranches.php`,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            });
+
+            const res = response.data;
+
+            Notify.info(res.message);
+
+            refreshBranchesBtnLoading = false;
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const handleDeleteTakeProduct = async (id) => {
+        let dt = {
+            id: id,
+        };
+
+        try {
+            const response = await axios({
+                method: "POST",
+                data: dt,
+                url: `${apiBaseUrl}deleteStockExpiryProduct.php`,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            });
+
+            let res = response.data;
+
+            if (res.success) {
+                Notify.success(res.message);
+
+                getProducts(liu.b);
+            } else {
+                Notify.failure(res.message);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const archiveStockTake = async () => {
+        let dt = {
+            user: authenticatedUser.name,
+            position: authenticatedUser.position,
+        };
+
+        try {
+            archiveStockTakeBtnLoading = true;
+
+            const response = await axios({
+                method: "POST",
+                data: dt,
+                url: `${apiBaseUrl}archiveStockTake.php`,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            });
+
+            const res = response.data;
+
+            // Notify.info(res.message);
+            alert(res.message);
+
+            window.location.reload();
+
+            archiveStockTakeBtnLoading = false;
+        } catch (err) {
+            console.log(err);
         }
     };
 
     onMount(async () => {
-        getStats();
-        getProducts();
+        getStats(liu.b);
 
         filterBranches = await getBranches();
 
@@ -80,9 +387,8 @@
             filteredBranch = liu.b;
         }
 
-        handleBranchesFilter(filteredBranch);
-
         // console.log(filterBranches);
+        generateShelves();
     });
 </script>
 
@@ -93,116 +399,286 @@
         </div>
 
         {#if liu.p == "admin"}
-            <div class="" style="margin: .5em;">
-                <select
-                    style="background:rgba(0, 0, 0, 0)"
-                    name="branches"
-                    id="branches"
-                    bind:value={filteredBranch}
-                >
-                    <option value="">Filter Branches</option>
-                    <option value="All">All</option>
-                    {#each filterBranches as b}
-                        <option value={b}>{b}</option>
-                    {/each}
-                </select>
+            <div class="" style="margin: .5em;display:flex">
+                <div class="">
+                    <select
+                        style="background:rgba(0, 0, 0, 0)"
+                        name="branches"
+                        id="branches"
+                        bind:value={filteredBranch}
+                    >
+                        <option value="">Filter Branches</option>
+                        <option value="All">All</option>
+                        {#each filterBranches as b}
+                            <option value={b}>{b}</option>
+                        {/each}
+                    </select>
+                </div>
+
+                <div class="" style="padding: 1em;">
+                    <Link to="access-tokens">Access Tokens</Link>
+                </div>
             </div>
         {/if}
-
-        <div class="actions" style="padding: 1em;">
-            <span style="margin: .4em;">
-                <button
-                    on:click={generateExcel}
-                    class="ui green mini button icon"
+    </div>
+    <div class="actionsBar">
+        <div class="actions" style="padding: 1em;display:flex">
+            <div class="shelf" style="flex: 1;">
+                <form
+                    class="ui form"
+                    on:submit|preventDefault={getTakeTwoProducts}
                 >
-                    <i class="excel file icon" />
+                    <div class="two fields">
+                        <div class="field" style="width:100%;">
+                            <select
+                                style="min-width: 12em;"
+                                name="shelf"
+                                id="shelf"
+                                bind:value={takeTwoShelf}
+                                required
+                            >
+                                <option value="">Select Shelf</option>
+                                {#each shelves as s}
+                                    <option value={s}>{s}</option>
+                                {/each}
+                            </select>
+                        </div>
+
+                        <div class="field" style="padding:.6em;width:100%">
+                            <button class="ui blue mini button icon">
+                                2
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="right" style="flex: 1;">
+                <span style="margin: .4em;padding:1em">
+                    <button
+                        on:click={() => {
+                            generateExcel("clean");
+                        }}
+                        class={exportExcelBtnLoading
+                            ? "ui green loading mini button icon"
+                            : "ui green mini button icon"}
+                    >
+                        <i class="excel file icon" /> Clean
+                    </button>
+
+                    <button
+                        on:click={() => {
+                            generateExcel("raw");
+                        }}
+                        class={exportExcelBtnLoading
+                            ? "ui blue loading mini button icon"
+                            : "ui blue mini button icon"}
+                    >
+                        <i class="excel file icon" /> Raw
+                    </button>
+                </span>
+            </div>
+
+            <!-- varinace check  -->
+            <div class="refresh_branches">
+                <button
+                    on:click={() => {
+                        if (confirm("Refresh Ziada Branches?")) {
+                            refreshBranches();
+                        }
+                    }}
+                    class={refreshBranchesBtnLoading
+                        ? "ui basic mini icon loading red button"
+                        : "ui basic mini icon  red button"}
+                >
+                    <i class="refresh icon" />
                 </button>
-            </span>
-        </div>
-    </div>
-
-    <div class="contentBar">
-        <div class="searchBar">
-            <InventorySearch
-                on:product={(e) => {
-                    searchProduct = e.detail;
-
-                    // open modal
-                    showAddProducts = true;
-                    // console.log(searchProduct);
-                }}
-            />
-        </div>
-        <div class="statsCol">
-            <div class="statsPanel">
-                <div class="statsFig">{stats.all_products}</div>
-                <div class="statDesc">Products</div>
             </div>
+            <!-- varinace check  -->
 
-            <div class="statsPanel">
-                <div class="statsFig">{stats.added}</div>
-                <div class="statDesc">
-                    Added <span class="host">(All)</span>
+            {#if authenticatedUser.position == "admin"}
+                <!-- archive -->
+                <div class="archive_stock_take">
+                    <button
+                        on:click={() => {
+                            if (confirm("Archive Current Stock Take?")) {
+                                archiveStockTake();
+                            }
+                        }}
+                        class={archiveStockTakeBtnLoading
+                            ? "ui basic mini icon loading orange button"
+                            : "ui basic mini icon  orange button"}
+                    >
+                        <i class="archive icon" />
+                    </button>
                 </div>
-            </div>
-
-            <div class="statsPanel">
-                <div class="statsFig">{stats.host_products}</div>
-                <div class="statDesc">
-                    Added <span class="host">({liu.b})</span>
-                </div>
-            </div>
-
-            <div class="statsPanel">
-                <div class="statsFig">{stats.remaining}</div>
-                <div class="statDesc">Remaining</div>
-            </div>
-        </div>
-
-        <div class="tableCol">
-            {#if liu.p == "admin"}
-                <div class="subTitle">
-                    <b>
-                        Filtered Branch <i style="font-size: small;"
-                            >({filteredBranch})</i
-                        >
-                    </b>
-                </div>
+                <!-- archive -->
             {/if}
-            <table class="ui very basic unstackable striped table">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Name</th>
-                        <th>Code</th>
-                        <th>Pack Size</th>
-                        <th>Qty</th>
-                        <th>Batch</th>
-                        <th>Branch</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {#each filteredProducts as product, i}
-                        <tr>
-                            <td>{i + 1}</td>
-                            <td>{product.name}</td>
-                            <td>{product.code}</td>
-                            <td>{product.pack_size}</td>
-                            <td>{`${product.qtyw}W ${product.qtyp}P`}</td>
-                            <td>{product.batch}</td>
-                            <td>{product.branch}</td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
         </div>
     </div>
+
+    <Router primary={false}>
+        <Route path="/">
+            <div class="contentBar">
+                <div class="searchBar">
+                    <InventorySearch
+                        on:product={(e) => {
+                            searchProduct = e.detail;
+
+                            // open modal
+                            showAddProducts = true;
+                            // console.log(searchProduct);
+                        }}
+                    />
+                </div>
+                <div class="loggedCol">
+                    <div class="lcol">
+                        Current Branch: <span style="color: crimson;">
+                            {liu.b}</span
+                        >
+                    </div>
+
+                    <div class="lcol">
+                        Current User: <span style="color: crimson;"
+                            >{authenticatedUser.name}</span
+                        >
+                    </div>
+                </div>
+                <div class="statsCol">
+                    <div class="statsPanel">
+                        <div class="statsFig">{stats.all_products ?? 0}</div>
+                        <div class="statDesc">Products</div>
+                    </div>
+
+                    <div class="statsPanel">
+                        <div class="statsFig">{stats.added ?? 0}</div>
+                        <div class="statDesc">Added</div>
+                    </div>
+
+                    <div class="statsPanel">
+                        <div class="statsFig">{stats.remaining ?? 0}</div>
+                        <div class="statDesc">Remaining</div>
+                    </div>
+                </div>
+
+                <div class="tableCol">
+                    <div class="table_title_col">
+                        <div class="left">
+                            {#if liu.p == "admin"}
+                                <div class="subTitle">
+                                    <b>
+                                        Filtered Branch <i
+                                            style="font-size: small;"
+                                            >({filteredBranch})</i
+                                        >
+                                    </b>
+                                </div>
+                            {/if}
+                        </div>
+                        <div class="right">
+                            <div class="filter_input">
+                                <input
+                                    type="text"
+                                    name="filter_input"
+                                    id="filter_input"
+                                    placeholder="Filter Products"
+                                    bind:value={products_filter_query}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="ui very basic unstackable striped table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Name</th>
+                                <th>Code</th>
+                                <th>Qty</th>
+                                <th>Batch</th>
+                                <th>Branch</th>
+                                <th> Actions </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {#each filtered_products as product, i}
+                                <!-- show the product is admin or the user added it -->
+
+                                <!-- if user is admin or the one who created the the product -->
+                                {#if authenticatedUser.position === "admin" || authenticatedUser.name === product.created_by}
+                                    <tr>
+                                        <td>{i + 1}</td>
+                                        <td>{product.name}</td>
+                                        <td>{product.code}</td>
+                                        <td
+                                            >{product.qty}({product.sales_uom})</td
+                                        >
+                                        <td>{product.batch}</td>
+                                        <td>{product.branch}</td>
+                                        <td>
+                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                            <i
+                                                style="font-size: large;cursor:pointer"
+                                                class="orange edit icon"
+                                                on:click={() => {
+                                                    if (
+                                                        confirm(
+                                                            `Edit ${product.name}?`
+                                                        )
+                                                    ) {
+                                                        editProduct = product;
+
+                                                        showEditProduct = true;
+                                                    }
+                                                }}
+                                            />
+
+                                            <!-- deletc -->
+                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                            <i
+                                                style="font-size: large;cursor:pointer"
+                                                class="red trash icon"
+                                                on:click={() => {
+                                                    if (
+                                                        confirm(
+                                                            `Delete ${product.name}?`
+                                                        )
+                                                    ) {
+                                                        handleDeleteTakeProduct(
+                                                            product.id
+                                                        );
+                                                    }
+                                                }}
+                                            />
+                                            <!-- deletc -->
+                                        </td>
+                                    </tr>
+                                {/if}
+
+                                <!-- if user is admin or the one who created the the product -->
+                            {/each}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </Route>
+
+        <Route path="take-two">
+            <div class="contentBar">Take Two</div>
+        </Route>
+
+        <Route path="access-tokens">
+            <div class="contentBar">
+                <AccessTokens />
+            </div>
+        </Route>
+    </Router>
 </main>
 
 <!-- show add product -->
 {#if showAddProducts && searchProduct}
     <AddProduct
         {searchProduct}
+        {authenticatedUser}
         on:cancel={() => {
             searchProduct = null;
             showAddProducts = false;
@@ -210,19 +686,78 @@
         on:success={() => {
             searchProduct = null;
             showAddProducts = false;
-            getStats();
-            getProducts();
+            getStats(liu.b);
+            getProducts(liu.b);
+        }}
+    />
+{/if}
+<!-- show add product -->
+
+<!-- show edit product -->
+{#if showEditProduct && editProduct}
+    <EditProduct
+        searchProduct={editProduct}
+        {authenticatedUser}
+        on:cancel={() => {
+            editProduct = null;
+            showEditProduct = false;
+        }}
+        on:success={() => {
+            let br = filteredBranch ? filteredBranch : "All";
+
+            editProduct = null;
+            showEditProduct = false;
+            getProducts(br);
+        }}
+    />
+{/if}
+<!-- show edit product -->
+
+<!-- take two  -->
+{#if showTakeTwo}
+    <TakeTwo
+        products={takeTwoProducts}
+        on:cancel={() => {
+            showTakeTwo = false;
+        }}
+        on:success={() => {
+            showTakeTwo = false;
+
+            getProducts(liu.b);
+        }}
+    />
+{/if}
+<!-- take two  -->
+
+<!-- auth token -->
+{#if showAuthToken}
+    <AuthToken
+        bind:authenticatedUser
+        on:cancel={() => {}}
+        errorMessage={AUTH_ERROR_MESSAGE}
+        cancelMessage="Operation Cannot Be Cancelled"
+        payload={authTokens}
+        on:success={() => {
+            let br = filteredBranch ? filteredBranch : "All";
+
+            showAuthToken = false;
+
+            getProducts(br);
         }}
     />
 {/if}
 
-<!-- show add product -->
+<!-- auth token -->
 
 <style>
     .statsCol {
         display: flex;
     }
 
+    .actionsBar {
+        display: flex;
+        justify-content: flex-end;
+    }
     .statsPanel {
         margin: 0.5em;
         box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
@@ -251,8 +786,22 @@
         color: crimson;
     }
 
-    .host {
-        font-size: small;
-        color: green;
+    .loggedCol {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .lcol {
+        padding: 1em;
+        font-weight: 800;
+    }
+
+    .table_title_col {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .right {
+        padding: 1em;
     }
 </style>

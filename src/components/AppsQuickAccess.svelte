@@ -5,7 +5,6 @@
     import FolderIcon from "../assets/icons/folder.png";
     import ZConnectIcon from "../assets/icons/zconnect.png";
     import SupportIcon from "../assets/icons/support.png";
-
     import MarketingIcon from "../assets/icons/marketing.png";
     import DeliverIcon from "../assets/icons/deliver.png";
     import CommunicationsIcon from "../assets/icons/communications.png";

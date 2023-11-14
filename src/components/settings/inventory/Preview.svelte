@@ -11,7 +11,7 @@
 
     export let qty;
 
-    export let pieces;
+    export let sales_uom;
 
     export let batch;
 
@@ -46,12 +46,10 @@
                 </div>
 
                 <div class="qty">
-                    Product Qty (W): <b>{qty}</b>
+                    Product Qty ({sales_uom}): <b>{qty}</b>
                 </div>
 
-                <div class="pieces">
-                    Product Qty (P): <b>{pieces}</b>
-                </div>
+     
 
                 <div class="batch">
                     Batch No: <b>{batch}</b>

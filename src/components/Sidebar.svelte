@@ -3,7 +3,6 @@
 
     import { onMount, createEventDispatcher } from "svelte";
     import { fly } from "svelte/transition";
-    import { Confirm } from "notiflix";
     import AppsQuickAccess from "./AppsQuickAccess.svelte";
     import { useLocation } from "svelte-navigator";
     import QuickLinks from "./dash/QuickLinks.svelte";

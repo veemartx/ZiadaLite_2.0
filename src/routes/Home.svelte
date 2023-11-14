@@ -216,7 +216,6 @@
         showSidebarModal = true;
     }}
 />
-
 <!-- action button -->
 
 <style>

@@ -760,7 +760,6 @@
                     </div>
                 </div>
             </form>
-
             <!-- the big form -->
         </div>
     </div>

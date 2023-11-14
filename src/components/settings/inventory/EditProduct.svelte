@@ -42,7 +42,7 @@
 
     let expiry_date;
 
-    let sales_uom = "";
+    let sales_uom;
 
     let batch;
 
@@ -60,7 +60,6 @@
 
     let authTokens = [];
 
-
     let localDbStoreUsers = liveQuery(() => db.users.toArray());
 
     let localDbStorePermissions = liveQuery(() => db.permissions.toArray());
@@ -71,7 +70,7 @@
 
     const ACTION = "create_products";
 
-    let currentMonth = dayjs().format("YYYY-MM");
+    let currentMonth = dayjs().format("MM-YYYY");
 
     let dispatch = createEventDispatcher();
 
@@ -118,7 +117,7 @@
         dispatch("success");
     };
 
-    const handleAddProduct = async () => {
+    const handleEditProduct = async () => {
         //
 
         let exp = dayjs(`${expiry_date}-01`)
@@ -126,6 +125,7 @@
             .format("YYYY-MM-DD");
 
         let dt = {
+            id:searchProduct.id,
             name: name,
             code: code,
             expiry_date: exp,
@@ -147,7 +147,7 @@
             const response = await axios({
                 method: "POST",
                 data: dt,
-                url: `${apiBaseUrl}createNsProductStockExpiry.php`,
+                url: `${apiBaseUrl}editNsProductStockExpiry.php`,
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
@@ -188,12 +188,13 @@
         name = searchProduct.name;
         code = searchProduct.code;
         batch_managed = searchProduct.batch_managed;
+        sales_uom = searchProduct.sales_uom;
+        qty = searchProduct.qty;
+        batch = searchProduct.batch;
+        expiry_date = searchProduct.expiry_date.substring(0, 7);
+        shelf = searchProduct.shelf;
 
-        if (liu.b == "HQ") {
-            sales_uom = "PKT";
-        } else {
-            sales_uom = searchProduct.sales_uom;
-        }
+        // console.log(shelf);
 
         generateShelves();
 
@@ -206,7 +207,7 @@
         <div class="modal">
             <div class="modalContent segment">
                 <div class="titleBar">
-                    <div class="title">Add Product</div>
+                    <div class="title">Edit Product</div>
                     <div class="action">
                         <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <i
@@ -282,7 +283,7 @@
 
                                 <div class="field">
                                     <label for="name"
-                                        >Qty ({sales_uom.toLowerCase()})</label
+                                        >Qty ({searchProduct.sales_uom.toLowerCase()})</label
                                     >
                                     <input
                                         type="number"
@@ -385,7 +386,7 @@
             showPreview = false;
         }}
         on:submit={() => {
-            handleAddProduct();
+            handleEditProduct();
         }}
     />
 {/if}
