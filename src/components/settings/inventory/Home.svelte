@@ -57,6 +57,26 @@
 
     let refreshBranchesBtnLoading = false;
 
+    let show_branch_shelf_filters = false;
+
+    let added_filter_sbt_btn_loading = false;
+
+    let added_filter_branch;
+
+    let added_filter_shelf;
+
+    let added_filter_target;
+
+    let added_filter_user;
+
+    let added_filter_type;
+
+    // one need to select branch first
+    let added_filter_branch_users = [];
+
+    // users
+    let added_filter_products = [];
+
     // auth
     const RESOURCE = "products";
 
@@ -77,7 +97,7 @@
                 RESOURCE,
                 ACTION,
                 $localDbStoreUsers,
-                $localDbStorePermissions
+                $localDbStorePermissions,
             );
         }
     }
@@ -116,6 +136,12 @@
         }
     }
 
+    // when added filter branch changes
+    $: {
+        if (added_filter_branch) {
+            getAddedFilterBranchUsers(added_filter_branch);
+        }
+    }
     const getStats = async (branch) => {
         let dt = {
             branch: branch,
@@ -135,6 +161,69 @@
             const res = response.data;
 
             stats = res;
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const getAddedFilterBranchUsers = async (added_filter_branch) => {
+        let dt = {
+            branch: added_filter_branch,
+        };
+
+        try {
+            const response = await axios({
+                method: "POST",
+                data: dt,
+                url: `${apiBaseUrl}getAddedFilterBranchUsers.php`,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            });
+
+            const res = response.data;
+
+            added_filter_branch_users = res;
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const getAddedFilterProducts = async () => {
+        // checks
+        if (added_filter_target == "shelf" && !added_filter_shelf) {
+            Notify.failure("Shelf Cannot Be Empty if its targeted");
+            return;
+        }
+
+        if (added_filter_target == "user" && !added_filter_user) {
+            Notify.failure("User Cannot Be Empty if its targeted");
+            return;
+        }
+
+        let dt = {
+            branch: added_filter_branch,
+            user: added_filter_user,
+            shelf: added_filter_shelf,
+            target: added_filter_target,
+            type: added_filter_type,
+        };
+
+        added_filter_sbt_btn_loading = true;
+
+        try {
+            const response = await axios({
+                method: "POST",
+                data: dt,
+                url: `${apiBaseUrl}getAddedFilterProducts.php`,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            });
+
+            generateAddedFilteredPrductsExcel(response.data);
+
+            added_filter_sbt_btn_loading = false;
         } catch (err) {
             console.log(err);
         }
@@ -228,6 +317,18 @@
         } catch (err) {
             console.log(err);
         }
+    };
+
+    const generateAddedFilteredPrductsExcel = (products) => {
+        let timestamp = dayjs();
+        // console.log(inventory);
+        const ws = utils.json_to_sheet(products);
+        const wb = utils.book_new();
+        utils.book_append_sheet(wb, ws, "Data");
+        writeFileXLSX(
+            wb,
+            `${added_filter_target}_filtered_products_${timestamp}.xlsx`,
+        );
     };
 
     const getTakeTwoProducts = async () => {
@@ -418,40 +519,121 @@
                 <div class="" style="padding: 1em;">
                     <Link to="access-tokens">Access Tokens</Link>
                 </div>
+
+                <div class="" style="padding: 1em;">
+                    <button
+                        on:click={() => {
+                            show_branch_shelf_filters =
+                                !show_branch_shelf_filters;
+                        }}
+                        class="ui purple mini icon button"
+                    >
+                        <i class="filter icon"></i> Filter
+                    </button>
+                </div>
             </div>
         {/if}
     </div>
+
+    <!-- branch, shelf added by filters-->
+    {#if show_branch_shelf_filters}
+        <div class="branch_shelf_filters" style="padding: 1em;">
+            <form
+                class="ui form"
+                on:submit|preventDefault={getAddedFilterProducts}
+            >
+                <div class="three fields">
+                    <div class="field">
+                        <label for="branch"> Branch </label>
+                        <select
+                            name="filter_branch"
+                            id="filter_branch"
+                            bind:value={added_filter_branch}
+                            required
+                        >
+                            <option value="">Select Branch</option>
+                            {#each filterBranches as b}
+                                <option value={b}>{b}</option>
+                            {/each}
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="shelf"> Shelf </label>
+                        <select
+                            name="filter_shelf"
+                            id="filter_shelf"
+                            bind:value={added_filter_shelf}
+                        >
+                            <option value="">Select Shelf</option>
+                            {#each shelves as s}
+                                <option value={s}>{s}</option>
+                            {/each}
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="user"> User </label>
+                        <select
+                            name="filter_user"
+                            id="filter_user"
+                            bind:value={added_filter_user}
+                        >
+                            <option value="">Select User</option>
+                            {#each added_filter_branch_users as u}
+                                <option value={u}>{u}</option>
+                            {/each}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="two fields">
+                    <div class="field">
+                        <label for="target"> Target </label>
+                        <select
+                            name="filter_target"
+                            id="filter_target"
+                            bind:value={added_filter_target}
+                            required
+                        >
+                            <option value="">Select Target</option>
+                            <option value="branch">Branch</option>
+                            <option value="shelf">Shelf</option>
+                            <option value="user">User</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="type"> Report Type </label>
+                        <select
+                            name="filter_report_type"
+                            id="filter_report_type"
+                            bind:value={added_filter_type}
+                            required
+                        >
+                            <option value="">Select Report Type</option>
+                            <option value="clean">clean</option>
+                            <option value="raw">raw</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field" style="text-align: center;padding-top:1em">
+                    <button
+                        class={added_filter_sbt_btn_loading
+                            ? "ui loading brown mini icon button"
+                            : "ui brown mini icon button"}
+                    >
+                        <i class="filter icon"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    {/if}
+    <!-- filters shelf added by filters-->
+
     <div class="actionsBar">
         <div class="actions" style="padding: 1em;display:flex">
-            <div class="shelf" style="flex: 1;">
-                <form
-                    class="ui form"
-                    on:submit|preventDefault={getTakeTwoProducts}
-                >
-                    <div class="two fields">
-                        <div class="field" style="width:100%;">
-                            <select
-                                style="min-width: 12em;"
-                                name="shelf"
-                                id="shelf"
-                                bind:value={takeTwoShelf}
-                                required
-                            >
-                                <option value="">Select Shelf</option>
-                                {#each shelves as s}
-                                    <option value={s}>{s}</option>
-                                {/each}
-                            </select>
-                        </div>
-
-                        <div class="field" style="padding:.6em;width:100%">
-                            <button class="ui blue mini button icon">
-                                2
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
             <div class="right" style="flex: 1;">
                 <span style="margin: .4em;padding:1em">
                     <button
@@ -622,7 +804,7 @@
                                                 on:click={() => {
                                                     if (
                                                         confirm(
-                                                            `Edit ${product.name}?`
+                                                            `Edit ${product.name}?`,
                                                         )
                                                     ) {
                                                         editProduct = product;
@@ -640,11 +822,11 @@
                                                 on:click={() => {
                                                     if (
                                                         confirm(
-                                                            `Delete ${product.name}?`
+                                                            `Delete ${product.name}?`,
                                                         )
                                                     ) {
                                                         handleDeleteTakeProduct(
-                                                            product.id
+                                                            product.id,
                                                         );
                                                     }
                                                 }}
